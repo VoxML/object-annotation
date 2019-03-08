@@ -1,5 +1,3 @@
-package com.srk.pkg;
-
 import java.awt.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -12,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyListener;
 
 import javax.swing.*;
 import java.util.*;
@@ -31,10 +30,11 @@ import org.w3c.dom.Element;
 
 public class AnnotationTool1 extends JFrame {
 
+	//OBJECT
  private JLabel NameLabel, TypeLabel, HeadLabel, CompLabel, CompNameLabel, CompIndexLabel, RotSymLabel, ReflSymLabel;
  private JLabel HabitatsLabel, HabitatsNameLabel, HabitatsValueLabel, IntrinsicLabel, ExtrinsicLabel, AffordancesLabel;
  private JLabel ScaleLabel, MovableLabel;
- private JButton Save, Load, TypeAdd, CompAdd, RotSymAdd, ReflSymAdd, IntrinsicAdd, ExtrinsicAdd, AffordancesAdd;
+ private JButton Save, Load, TypeAdd, CompAdd, IntrinsicAdd, ExtrinsicAdd, AffordancesAdd;
  private JButton object, event, object1, event1;
  private JTextField Path, Name, HeadIndex;
  private JComboBox<String> Head, Scale;
@@ -69,32 +69,55 @@ public class AnnotationTool1 extends JFrame {
  private JScrollPane scroller,panel1;
  private String[] possibleTypes = {"","physobj","artifact","human"};
  private String path;
- private String readName /*V*/, readHead /*V*/, readHeadIndex /*V*/, readScale /*V*/, readMovable /*V*/;
- private ArrayList<String> readTypes /*V*/ = new ArrayList<String>();
- private ArrayList<String> readComponents /*V*/ = new ArrayList<String>();
- private ArrayList<String> readCompInds /*V*/ = new ArrayList<String>();
- private ArrayList<String> readConcaveInds /*V*/ = new ArrayList<String>();
- private ArrayList<String> readRotatSym /*V*/ = new ArrayList<String>();
- private ArrayList<String> readReflSym /*V*/ = new ArrayList<String>();
- private ArrayList<String> readIntrinsicNames /*V*/ = new ArrayList<String>();
- private ArrayList<String> readIntrinsicValues /*V*/ = new ArrayList<String>();
- private ArrayList<String> readExtrinsicNames /*V*/ = new ArrayList<String>();
- private ArrayList<String> readExtrinsicValues /*V*/ = new ArrayList<String>();
- private ArrayList<String> readAffords /*V*/ = new ArrayList<String>(); 
+ private String readName, readHead, readHeadIndex, readScale, readMovable;
+ private ArrayList<String> readTypes = new ArrayList<String>();
+ private ArrayList<String> readComponents = new ArrayList<String>();
+ private ArrayList<String> readCompInds = new ArrayList<String>();
+ private ArrayList<String> readConcaveInds = new ArrayList<String>();
+ private ArrayList<String> readRotatSym = new ArrayList<String>();
+ private ArrayList<String> readReflSym = new ArrayList<String>();
+ private ArrayList<String> readIntrinsicNames = new ArrayList<String>();
+ private ArrayList<String> readIntrinsicValues = new ArrayList<String>();
+ private ArrayList<String> readExtrinsicNames = new ArrayList<String>();
+ private ArrayList<String> readExtrinsicValues = new ArrayList<String>();
+ private ArrayList<String> readAffords = new ArrayList<String>(); 
+
+ //EVENT
+ private JLabel NameLabel1, TypeLabel1, HeadLabel1, ArgsLabel, ArgsNameLabel, ArgsIndexLabel;
+ private JLabel BodyLabel, BodyNameLabel, BodyIndexLabel, EmbeddingSpaceLabel;
+ private ArrayList<JTextField> ArgNames = new ArrayList<JTextField>();
+ private ArrayList<JTextField> ArgInds = new ArrayList<JTextField>();
+ private ArrayList<JTextField> BodyNames = new ArrayList<JTextField>();
+ private ArrayList<JTextField> BodyInds = new ArrayList<JTextField>();
+ private JButton TypeAdd1, ArgAdd, BodyAdd, Save1, Load1;
+ private ArrayList<JButton> TypeRemove1 = new ArrayList<JButton>();
+ private JTextField Name1, HeadIndex1, EmbeddingSpace;
+ private ArrayList<JComboBox<String>> Types1 = new ArrayList<JComboBox<String>>();
+ private String[] possibleTypes1 = {"","process","transition_event"};
+ private int nE, n1E, n2E, n3E;
+ private String typesString1, headString1, path1;
+ private JComboBox<String> Head1;
+ private ArrayList<String> argsStrings = new ArrayList<String>();
+ private ArrayList<JButton> ArgRemove = new ArrayList<JButton>();
+ private ArrayList<String> bodyStrings = new ArrayList<String>();
+ private ArrayList<JButton> BodyRemove = new ArrayList<JButton>();
+ private String readName1, readHead1;
+ private ArrayList<String> readTypes1 = new ArrayList<String>();
+ private ArrayList<String> readArgs1 = new ArrayList<String>();
+ private ArrayList<String> readBody1 = new ArrayList<String>();
+
 
  
  public AnnotationTool1() {
-  createView();
+  createObjectView();
+  createEventView();
   pack();
   setSize(new Dimension(640,770)); //set default frame size
   setLocationRelativeTo(null); //starts at the middle of the screen
   setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   setVisible(true); 
-  //set up frame here
-  //setResizable(false);
  }
-
- private void createView() {
+ private void createObjectView() {
   indicator = 0;
   Color lightPurple = new Color(200, 150, 250);
   Color lightGreen = new Color(150, 250, 150);
@@ -103,67 +126,29 @@ public class AnnotationTool1 extends JFrame {
   panel.setBackground(lightPurple);
   panel.setLayout(null);
   eventPanel = new JPanel();
-  eventPanel.setBackground(lightGreen);
-  eventPanel.setLayout(null);
-  //panel = new JScrollPane(panel1, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-     //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   
-  //Scrollbar ranger = new Scrollbar(Scrollbar.VERTICAL, 0, 60, 0, 300);
-  //ranger.setVisible(true);
-  //panel.add(ranger);
-
   object = new JButton("Object Annotation");
   event = new JButton("Event Annotation");
   object.setBounds(20,10,150,25);
   event.setBounds(175,10,150,25);
   object.setVisible(true);
   event.setVisible(true);
+ 
+  panel.add(object);
+  panel.add(event);
   
   event.addActionListener(
     new ActionListener() {
      @Override
      public void actionPerformed(ActionEvent e) {
-      object1.setBounds(20,10,150,25);
-      event1.setBounds(175,10,150,25);
       panel.setVisible(false);
-      //add(eventPanel);
+      remove(panel);
+      remove(scroller);
+      add(eventPanel);
       eventPanel.setVisible(true);
-      object1.setVisible(true);
-      event1.setVisible(true);
-      System.out.println("object button bounds: " + object1.getBounds());
-      System.out.println("event button bounds: " + event1.getBounds());
-      eventPanel.add(object1);
-      eventPanel.add(event1);
-      getContentPane().add(eventPanel);
      }
     }
   );
-  panel.add(object);
-  panel.add(event);
-  
-  object1 = new JButton("Object Annotation");
-  event1 = new JButton("Event Annotation");
-  object1.setBounds(20,10,150,25);
-  event1.setBounds(175,10,150,25);
-  //object1.setVisible(true);
-  //event1.setVisible(true);
-  object1.addActionListener(
-    new ActionListener() {
-     @Override
-     public void actionPerformed(ActionEvent e) {
-      add(panel);
-      getContentPane().add(panel);
-      panel.setVisible(true);
-      eventPanel.setVisible(false);
-      object.setVisible(true);
-      event.setVisible(true);
-      panel.add(object);
-      panel.add(event);
-     }
-    }
-  );
-  eventPanel.add(object1);
-  eventPanel.add(event1);
   
   //NAME
   NameLabel = new JLabel("Name:");
@@ -253,7 +238,7 @@ public class AnnotationTool1 extends JFrame {
   );
      updateTypes();
      //LOAD
-     Load = new JButton("load from XML");
+     Load = new JButton("Load from XML");
      Load.setBounds(440, 20, 120, 25);
      Load.setVisible(true);
      panel.add(Load);
@@ -290,19 +275,18 @@ public class AnnotationTool1 extends JFrame {
      String[] possibleHeads = {"", "prismatoid", "pyramid", "wedge", "parallelepiped", "cupola", "frustum", "cylindroid", "ellipsoid", "hemiellipsoid", "bipyramid", "rectangular prism", "toroid", "sheet"};
      Head = new JComboBox<String>(possibleHeads);
      Head.setBounds(65,80+30*n1,150,25);
-  Head.setVisible(true);
-  panel.add(Head);
-  HeadIndex = new JTextField();
-  HeadIndex.setBounds(220,80+30*n1,40,25);
-  HeadIndex.setVisible(true);
-  panel.add(HeadIndex);
-  Head.addActionListener(
-    new ActionListener() {
+     Head.setVisible(true);
+     panel.add(Head);
+     HeadIndex = new JTextField();
+     HeadIndex.setBounds(220,80+30*n1,40,25);
+     HeadIndex.setVisible(true);
+     panel.add(HeadIndex);
+     Head.addActionListener(
+     new ActionListener() {
      @Override
      public void actionPerformed(ActionEvent e) {
       headString = (String) Head.getSelectedItem() + "[" + HeadIndex.getText() + "]";
-      System.out.println(headString);
-     }
+      }
     }
   );
   HeadIndex.addActionListener(
@@ -310,7 +294,6 @@ public class AnnotationTool1 extends JFrame {
      @Override
      public void actionPerformed(ActionEvent e) {
       headString = (String) Head.getSelectedItem() + "[" + HeadIndex.getText() + "]";
-      System.out.println(headString);
      }
     }
   );
@@ -443,78 +426,7 @@ public class AnnotationTool1 extends JFrame {
   panel.add(RotSymX);
   panel.add(RotSymY);
   panel.add(RotSymZ);  
-  /*
-  String[] possibleRotSym = {"","X","Y","Z"};
-  JComboBox<String> rotSym = new JComboBox<String>(possibleRotSym);
-  rotSym.setBounds(40,220+30*n1+30*n2,150,25);
-  rotSym.setVisible(true);
-  RotSym.add(rotSym);
-  JButton remove3 = new JButton("remove");
-  remove3.setBounds(195,220+30*n1+30*n2,80,25);;
-  remove3.setVisible(true);
-  remove3.addActionListener(
-    new ActionListener() {
-     @Override
-     public void actionPerformed(ActionEvent e) {
-      if(RotSym.size() > 0)
-       {
-       RotSym.get(0).setEnabled(false);
-       RotSymRemove.get(0).setEnabled(false);
-         RotSym.get(0).setVisible(false);
-         RotSymRemove.get(0).setVisible(false);
-         panel.remove(RotSym.get(0));
-         panel.remove(RotSymRemove.get(0));          
-         panel.revalidate();
-          panel.repaint();
-          RotSym.remove(0);
-          RotSymRemove.remove(0);          
-          updateRotSym();
-          n3 = RotSym.size();
-          for(int k = 0; k < n3; k++)
-          {
-           RotSym.get(k).setBounds(40,220+30*n1+30*n2,150,25);
-          }
-          if(n3<3)
-           RotSymAdd.setVisible(true);
-      }
-         updateLocation();
-        }
-    }
-  );
-  RotSymRemove.add(remove3);
-  panel.add(RotSymRemove.get(0));
-  panel.add(RotSym.get(0));
-  RotSymAdd = new JButton("add");
-  RotSymAdd.setBounds(300,190+30*n1+30*n2,80,25);
-  RotSymAdd.setVisible(true);
-  panel.add(RotSymAdd);
-  RotSymAdd.addActionListener(
-   new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-     n1 = Types.size();
-     n2 = CompNames.size();
-     n3 = RotSym.size();
-     System.out.println(n3);
-     JComboBox<String> rotSym = new JComboBox<String>(possibleRotSym);
-     rotSym.setBounds(40,220+30*n1+30*n2+30*n3,150,25);
-     rotSym.setVisible(true);
-     RotSym.add(rotSym);
-     panel.add(RotSym.get(RotSym.size()-1));
-     JButton remove3 = new JButton("remove");
-     remove3.setBounds(195,220+30*n1+30*n2+30*n3,80,25);
-     remove3.setVisible(true);
-     RotSymRemove.add(remove3);
-     panel.add(RotSymRemove.get(RotSymRemove.size()-1));
-     n3 = RotSym.size();
-     if (n3==3)
-      RotSymAdd.setVisible(false);
-     updateRotSym();
-     updateLocation(); 
-    }
-   }
-  ); */
-  
+   
    //REFLSYM
   
   ReflSymLabel = new JLabel("Reflection Symmetry:");
@@ -537,86 +449,7 @@ public class AnnotationTool1 extends JFrame {
   panel.add(ReflSymXY);
   panel.add(ReflSymYZ);
   panel.add(ReflSymXZ);
-  
-  /*
-     ReflSymLabel = new JLabel("Reflection Symmetry:");
-     ReflSymLabel.setVisible(true);
-     ReflSymLabel.setBounds(20,250+30*n1+30*n2+30*n3,200,25);
-     panel.add(ReflSymLabel);
-     String[] possibleReflSym = {"","XY","YZ","XZ"};
-     JComboBox<String> reflSym = new JComboBox<String>(possibleReflSym);
-     reflSym.setBounds(40,280+30*n1+30*n2+30*n3,150,25);
-     reflSym.setVisible(true);
-     ReflSym.add(reflSym);
-     JButton remove4 = new JButton("remove");
-     remove4.setBounds(195,280+30*n1+30*n2+30*n3,80,25);;
-     remove4.setVisible(true);
-     remove4.addActionListener(
-       new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-         if(ReflSym.size() > 0)
-          {
-          ReflSym.get(0).setEnabled(false);
-          ReflSymRemove.get(0).setEnabled(false);
-            ReflSym.get(0).setVisible(false);
-            ReflSymRemove.get(0).setVisible(false);
-            panel.remove(ReflSym.get(0));
-            panel.remove(ReflSymRemove.get(0));          
-            panel.revalidate();
-             panel.repaint();
-             ReflSym.remove(0);
-             ReflSymRemove.remove(0);          
-             updateTypes();
-             n4 = ReflSym.size();
-             for(int k = 0; k < n4; k++)
-             {
-              ReflSym.get(k).setBounds(40,280+30*n1+30*n2+30*n3,150,25);
-             }
-             if(n4<3)
-              ReflSymAdd.setVisible(true);
-         }
-            updateLocation(); 
-        }
-       }
-     );
-     ReflSymRemove.add(remove4);
-     panel.add(ReflSymRemove.get(0));
-     panel.add(ReflSym.get(0));
-     ReflSymAdd = new JButton("add");
-     ReflSymAdd.setBounds(300,250+30*n1+30*n2+30*n3,80,25);
-     ReflSymAdd.setVisible(true);
-     panel.add(ReflSymAdd);
-     ReflSymAdd.addActionListener(
-      new ActionListener() {
-       @Override
-       public void actionPerformed(ActionEvent e) {
-        n1 = Types.size();
-        n2 = CompNames.size();
-        n4 = ReflSym.size();
-        System.out.println(n4);
-        JComboBox<String> reflSym = new JComboBox<String>(possibleReflSym);
-        reflSym.setBounds(40,250+30*n1+30*n2,150,25);
-        reflSym.setVisible(true);
-        ReflSym.add(reflSym);
-        panel.add(ReflSym.get(ReflSym.size()-1));
-        JButton remove4 = new JButton("remove");
-        remove4.setBounds(195,250+30*n1+30*n2,80,25);
-        remove4.setVisible(true);
-        ReflSymRemove.add(remove4);
-        panel.add(ReflSymRemove.get(ReflSymRemove.size()-1));
-        n4 = ReflSym.size();
-        if (n4==3)
-         ReflSymAdd.setVisible(false);
-        updateReflSym();
-        updateLocation();
-       }
-      }
-     ); */
-   //updateLocation();
-        //updateReflSym();
-        
-        
+          
     //Habitats
    HabitatsLabel = new JLabel("Habitats:");
    HabitatsLabel.setBounds(20,260+30*n1+30*n2,100,25);
@@ -900,8 +733,8 @@ public class AnnotationTool1 extends JFrame {
     new ActionListener() {
      @Override
      public void actionPerformed(ActionEvent e) {
-      System.out.println("Saved to XML");
       writeXML();
+      System.out.println("Saved to XML");
      }
     }
   );
@@ -946,9 +779,449 @@ public class AnnotationTool1 extends JFrame {
   );
   //scroller.getVerticalScrollBar().addContainerListener(new ContainerListener() {});
 
-  
  }
- 
+ private void createEventView() {
+	  indicator = 0;
+	  Color lightPurple = new Color(200, 150, 250);
+	  Color lightGreen = new Color(150, 250, 150);
+	  Color black = new Color(0, 0, 0);
+	  eventPanel.setBackground(lightGreen);
+	  eventPanel.setLayout(null);
+
+	  object1 = new JButton("Object Annotation");
+	  event1 = new JButton("Event Annotation");
+	  object.setBounds(20,10,150,25);
+	  event.setBounds(175,10,150,25);
+	  object.setVisible(true);
+	  event.setVisible(true);
+	 
+	  eventPanel.add(object1);
+	  eventPanel.add(event1);
+	 
+	  object1.addActionListener(
+			    new ActionListener() {
+			     @Override
+			     public void actionPerformed(ActionEvent e) {
+			      eventPanel.setVisible(false);
+			      remove(eventPanel);
+			      add(panel);
+			      scroller = new JScrollPane(panel);
+			      add(scroller);
+			      scroller.setBounds(20,20,20,20);
+			      scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			      scroller.getVerticalScrollBar().setEnabled(true);
+			      scroller.getVerticalScrollBar().validate();
+			      System.out.println(scroller.getVerticalScrollBar());
+			      panel.setVisible(true);
+			      System.out.println(getContentPane().getComponentCount());
+			     }
+			    }
+			  );
+	  
+	  //NAME
+	  NameLabel1 = new JLabel("Name:");
+	  NameLabel1.setBounds(20,20,40,25);
+	  NameLabel1.setVisible(true);
+	  Name1 = new JTextField();
+	  Name1.setBounds(65,20,80,25);
+	  Name1.setVisible(true);
+	  Name1.addActionListener(
+	    new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	      setTitle(Name1.getText());
+	     }
+	    }
+	  );        
+	  eventPanel.add(NameLabel1);
+	  eventPanel.add(Name1);
+	    
+	  //TYPE
+	  TypeLabel1 = new JLabel("Type:");
+	  TypeLabel1.setVisible(true);
+	  TypeLabel1.setBounds(20,50,40,25);
+	  eventPanel.add(TypeLabel1);
+	  JComboBox<String> type1 = new JComboBox<String>(possibleTypes1);
+	  type1.setBounds(40,80,150,25);
+	  type1.setVisible(true);
+	  Types1.add(type1);
+	  JButton removeE2 = new JButton("remove");
+	  removeE2.setBounds(195,80,80,25);;
+	  removeE2.setVisible(true);
+	  removeE2.addActionListener(
+	    new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	    	 Types1.get(0).setEnabled(false);
+	        TypeRemove1.get(0).setEnabled(false);
+	        Types1.get(0).setVisible(false);
+	        TypeRemove1.get(0).setVisible(false);
+	        eventPanel.remove(Types1.get(0));
+	        eventPanel.remove(TypeRemove1.get(0));          
+	        eventPanel.revalidate();
+	        eventPanel.repaint();
+	         Types1.remove(0);
+	         TypeRemove1.remove(0);          
+	         updateTypes1();
+	         n1E = Types1.size();
+	         for(int k = 0; k < n1E; k++)
+	         {
+	          Types1.get(k).setBounds(40,80+30*k,150,25);
+	         }
+	         if(n1E<2)
+	          TypeAdd1.setVisible(true);
+	         updateLocation1(); 
+	     }
+	    }
+	  );
+	  TypeRemove1.add(removeE2);
+	  eventPanel.add(TypeRemove1.get(0));
+	  eventPanel.add(Types1.get(0));
+	  TypeAdd1 = new JButton("add");
+	  TypeAdd1.setBounds(300,50,80,25);
+	  TypeAdd1.setVisible(true);
+	  eventPanel.add(TypeAdd1);
+	     TypeAdd1.addActionListener(
+	     new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	      n1E = Types.size();
+	      JComboBox<String> type1 = new JComboBox<String>(possibleTypes1);
+	      type1.setBounds(40,80+30*n1,150,25);
+	      type1.setVisible(true);
+	      Types1.add(type1);
+	      eventPanel.add(Types1.get(Types1.size()-1));
+	      JButton remove2E = new JButton("remove");
+	      remove2E.setBounds(195,80+30*n1,80,25);
+	      remove2E.setVisible(true);
+	      TypeRemove1.add(remove2E);
+	      eventPanel.add(TypeRemove1.get(TypeRemove1.size()-1));
+	      n1E = Types1.size();
+	      if (n1E==2)
+	       TypeAdd1.setVisible(false);
+	      updateTypes1();
+	      updateLocation1();
+	     }
+	    }
+	  );
+	     updateTypes1();
+	     
+	     //LOAD
+	     Load1 = new JButton("Load from XML");
+	     Load1.setBounds(440, 55, 120, 25);
+	     Load1.setVisible(true);
+	     eventPanel.add(Load1);
+	          
+	     //Path = new JTextField();
+	     //Path.setVisible(true);
+	     //panel.add(Path);
+
+	     Load1.addActionListener(new ActionListener() {
+	       public void actionPerformed(ActionEvent e) {
+	         JFileChooser fileChooser = new JFileChooser();
+	         // For Directory
+	         // fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	         // For File
+	         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	         fileChooser.setAcceptAllFileFilterUsed(false);
+	         int rVal = fileChooser.showOpenDialog(null);
+	         if (rVal == JFileChooser.APPROVE_OPTION) {
+	           Path.setText(fileChooser.getSelectedFile().toString());
+	         }
+	         path1 = fileChooser.getSelectedFile().toString();
+	         readXML1();
+	       }
+	     });
+	     
+	     n1E = Types1.size();
+	     
+	     //HEAD
+	     HeadLabel1 = new JLabel("Head:");
+	     HeadLabel1.setBounds(20,80+30*n1E,40,25);
+	     HeadLabel1.setVisible(true);
+	     eventPanel.add(HeadLabel1);
+	     String[] possibleHeads1 = {"", "state", "process", "transition assignment", "test"};
+	     Head1 = new JComboBox<String>(possibleHeads1);
+	     Head1.setBounds(65,80+30*n1E,150,25);
+	     Head1.setVisible(true);
+	     eventPanel.add(Head1);
+	     HeadIndex1 = new JTextField();
+	     HeadIndex1.setBounds(220,80+30*n1E,40,25);
+	     HeadIndex1.setVisible(true);
+	     eventPanel.add(HeadIndex1);
+	     Head1.addActionListener(
+	    	new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	    	 if(HeadIndex1.getText()==null || HeadIndex1.getText().equals(null) || HeadIndex1.getText().equals(""))
+	    		 headString1 = (String) Head1.getSelectedItem();
+	    	 else
+	    		 headString1 = (String) Head1.getSelectedItem() + "[" + HeadIndex1.getText() + "]";
+	     }
+	    }
+	  );
+	  HeadIndex1.addActionListener(
+	    new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	    	 if(HeadIndex1.getText()==null || HeadIndex1.getText().equals(null) || HeadIndex1.getText().equals(""))
+	    		 headString1 = (String) Head1.getSelectedItem();
+	    	 else
+	    		 headString1 = (String) Head1.getSelectedItem() + "[" + HeadIndex1.getText() + "]";	     }
+	    }
+	  );
+	  
+	  //ARGS
+	  ArgsLabel = new JLabel("Args:");
+	  ArgsLabel.setBounds(20,120+30*n1E,100,25);
+	  ArgsLabel.setVisible(true);
+	  eventPanel.add(ArgsLabel);
+	  ArgsNameLabel = new JLabel("name:");
+	  ArgsNameLabel.setBounds(40,160+30*n1E,60,25);
+	  ArgsNameLabel.setVisible(true);
+	  eventPanel.add(ArgsNameLabel);
+	  ArgsIndexLabel = new JLabel("index:");
+	  ArgsIndexLabel.setBounds(105,160+30*n1E,60,25);
+	  ArgsIndexLabel.setVisible(true);
+	  eventPanel.add(ArgsIndexLabel);
+	  JTextField argName = new JTextField();
+	  JTextField argIndex = new JTextField();
+	  argName.setBounds(40,190+30*n1E,60,25);
+	  argIndex.setBounds(105,190+30*n1E,60,25);
+	  argName.setVisible(true);
+	  argIndex.setVisible(true);
+	  ArgNames.add(argName);
+	  ArgInds.add(argIndex);
+	  JButton remove1E = new JButton("remove");
+	  
+	  remove1E.setBounds(170,190+30*n1E,80,25);
+	  remove1E.setVisible(true);
+	  remove1E.addActionListener(
+	    new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	      ArgNames.get(0).setEnabled(false);
+	      ArgInds.get(0).setEnabled(false);
+	      ArgRemove.get(0).setEnabled(false);
+	      ArgNames.get(0).setVisible(false);
+	      ArgInds.get(0).setVisible(false);
+	      ArgRemove.get(0).setVisible(false);
+	      eventPanel.remove(ArgNames.get(0));
+	      eventPanel.remove(ArgInds.get(0));
+	      eventPanel.remove(ArgRemove.get(0));  
+	      eventPanel.revalidate();
+	      eventPanel.repaint();
+	         ArgNames.remove(0);
+	         ArgInds.remove(0);
+	         ArgRemove.remove(0); 
+	         updateArgs();
+	         n2E = ArgNames.size();
+	         for(int k = 0; k < n2E; k++)
+	         {
+	        	 ArgNames.get(k).setBounds(40,190+30*n1E+30*n2E,60,25);
+	        	 ArgInds.get(k).setBounds(105,190+30*n1E+30*n2E,60,25);
+	        	 ArgRemove.get(k).setBounds(170,190+30*n1E+30*n2E,80,25);
+	         }
+	         updateLocation1(); 
+	     }
+	    }
+	  );
+	  ArgRemove.add(remove1E);
+	  eventPanel.add(ArgRemove.get(0));
+	  eventPanel.add(ArgNames.get(0));
+	  eventPanel.add(ArgInds.get(0));
+	  eventPanel.validate();
+	  ArgAdd = new JButton("add");
+	  ArgAdd.setBounds(300,130+30*n1E,80,25);
+	  ArgAdd.setVisible(true);
+	  eventPanel.add(ArgAdd);
+	  ArgAdd.addActionListener(
+	    new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	      n2E = ArgNames.size();
+	      JTextField argName = new JTextField();
+	      JTextField argInd = new JTextField();
+	      argName.setBounds(40,190+30*n1E+30*n2E,60,25);
+	      argInd.setBounds(105,190+30*n1E+30*n2E,60,25);
+	      argName.setVisible(true);
+	      argInd.setVisible(true);
+	      ArgNames.add(argName);
+	      ArgInds.add(argInd);
+	      eventPanel.add(ArgNames.get(ArgNames.size()-1));
+	      eventPanel.add(ArgInds.get(ArgInds.size()-1));
+	      JButton remove1E = new JButton("remove");
+	      remove1E.setBounds(170,190+30*n1E+30*n2E,80,25);
+	      remove1E.setVisible(true);
+	      ArgRemove.add(remove1E);
+	      eventPanel.add(ArgRemove.get(ArgRemove.size()-1));
+	      n2E = ArgNames.size();
+	      updateArgs();
+	      updateLocation1(); 
+	     }
+	    }
+	  );
+	     updateArgs();
+	  n2E = ArgNames.size();
+	 
+	//BODY
+	  BodyLabel = new JLabel("Body:");
+	  BodyLabel.setBounds(20,150+30*n1E+30*n2E,100,25);
+	  BodyLabel.setVisible(true);
+	  eventPanel.add(BodyLabel);
+	  BodyNameLabel = new JLabel("name:");
+	  BodyNameLabel.setBounds(40,180+30*n1E+30*n2E,60,25);
+	  BodyNameLabel.setVisible(true);
+	  eventPanel.add(BodyNameLabel);
+	  BodyIndexLabel = new JLabel("index:");
+	  BodyIndexLabel.setBounds(105,180+30*n1E+30*n2E,60,25);
+	  BodyIndexLabel.setVisible(true);
+	  eventPanel.add(BodyIndexLabel);
+	  JTextField bodyName = new JTextField();
+	  JTextField bodyIndex = new JTextField();
+	  bodyName.setBounds(40,220+30*n1E+30*n2E,60,25);
+	  bodyIndex.setBounds(105,220+30*n1E+30*n2E,60,25);
+	  bodyName.setVisible(true);
+	  bodyIndex.setVisible(true);
+	  BodyNames.add(bodyName);
+	  BodyInds.add(bodyIndex);
+	  JButton remove2E = new JButton("remove");
+	  
+	  remove2E.setBounds(170,220+30*n1E+30*n2E,80,25);
+	  remove2E.setVisible(true);
+	  remove2E.addActionListener(
+	    new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	      BodyNames.get(0).setEnabled(false);
+	      BodyInds.get(0).setEnabled(false);
+	      BodyRemove.get(0).setEnabled(false);
+	      BodyNames.get(0).setVisible(false);
+	      BodyInds.get(0).setVisible(false);
+	      BodyRemove.get(0).setVisible(false);
+	      eventPanel.remove(BodyNames.get(0));
+	      eventPanel.remove(BodyInds.get(0));
+	      eventPanel.remove(BodyRemove.get(0));  
+	      eventPanel.revalidate();
+	      eventPanel.repaint();
+	      BodyNames.remove(0);
+	         BodyInds.remove(0);
+	         BodyRemove.remove(0); 
+	         updateBody();
+	         n3E = BodyNames.size();
+	         for(int k = 0; k < n3E; k++)
+	         {
+	        	 BodyNames.get(k).setBounds(40,220+30*n1E+30*n2E+30*n3E,60,25);
+	        	 BodyInds.get(k).setBounds(105,220+30*n1E+30*n2E+30*n3E,60,25);
+	        	 BodyRemove.get(k).setBounds(170,220+30*n1E+30*n2E+30*n3E,80,25);
+	         }
+	         updateLocation1(); 
+	     }
+	    }
+	  );
+	  BodyRemove.add(remove2E);
+	  eventPanel.add(BodyRemove.get(0));
+	  eventPanel.add(BodyNames.get(0));
+	  eventPanel.add(BodyInds.get(0));
+	  eventPanel.validate();
+	  BodyAdd = new JButton("add");
+	  BodyAdd.setBounds(300,160+30*n1E+30*n2E,80,25);
+	  BodyAdd.setVisible(true);
+	  eventPanel.add(BodyAdd);
+	  BodyAdd.addActionListener(
+	    new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	      n3E = BodyNames.size();
+	      JTextField bodyName = new JTextField();
+	      JTextField bodyInd = new JTextField();
+	      bodyName.setBounds(40,220+30*n1E+30*n2E+30*n3E,60,25);
+	      bodyInd.setBounds(105,220+30*n1E+30*n2E+30*n3E,60,25);
+	      bodyName.setVisible(true);
+	      bodyInd.setVisible(true);
+	      BodyNames.add(bodyName);
+	      BodyInds.add(bodyInd);
+	      eventPanel.add(BodyNames.get(BodyNames.size()-1));
+	      eventPanel.add(BodyInds.get(BodyInds.size()-1));
+	      JButton remove2E = new JButton("remove");
+	      remove2E.setBounds(170,220+30*n1E+30*n2E+30*n3E,80,25);
+	      remove2E.setVisible(true);
+	      BodyRemove.add(remove2E);
+	      eventPanel.add(BodyRemove.get(BodyRemove.size()-1));
+	      n3E = BodyNames.size();
+	      updateBody();
+	      updateLocation1(); 
+	     }
+	    }
+	  );
+	     updateBody();
+	  n3E = BodyNames.size();
+	  
+	  EmbeddingSpaceLabel = new JLabel("Embedding Space:");
+	  EmbeddingSpaceLabel.setBounds(20,270+30*n1E+30*n2E+30*n3E,160,25);
+	  EmbeddingSpaceLabel.setVisible(true);
+	  eventPanel.add(EmbeddingSpaceLabel);
+	  EmbeddingSpace = new JTextField();
+	  EmbeddingSpace.setBounds(40,300+30*n1E+30*n2E+30*n3E,80,25);
+	   EmbeddingSpace.setVisible(true);
+	   eventPanel.add(EmbeddingSpace);
+	    
+	     //XML
+	  Save1 = new JButton("Save to XML");
+	  Save1.setBounds(300,55,120,25);
+	  Save1.setVisible(true);
+	  eventPanel.add(Save1);
+	     Save1.addActionListener(
+	    new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	      writeXML1();
+	      System.out.println("Saved to XML");
+	     }
+	    }
+	  );
+
+	     /*
+	  //JScrollPane JScrollPane = new JScrollPane(panel);
+	  //JScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+	  //JScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	  //JScrollPane.setPreferredSize(new Dimension(450, 110));
+	  //getContentPane().add(JScrollPane, BorderLayout.CENTER);
+	  */
+	  updateLocation1();
+	  add(eventPanel);
+	  getContentPane().add(panel);
+	  eventPanel.setVisible(false);
+	  panel.setVisible(true);
+	  /*scroller = new JScrollPane(panel);
+	  scroller.getVerticalScrollBar().setPreferredSize(new Dimension(15,20));
+	  scroller.getVerticalScrollBar().setBlockIncrement(20);
+	  getContentPane().add(scroller, BorderLayout.CENTER);
+	  scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS); 
+	  JButton scrollTest = new JButton ("scroll"); 
+	  scrollTest.setBounds(400,200,200,30);
+	  scrollTest.setVisible(true);
+	  panel.add(scrollTest);
+	  scrollTest.addActionListener(
+	    new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	      System.out.println(scroller.getVerticalScrollBar().getVisibleAmount());
+	      System.out.println(scroller.getVerticalScrollBar().getValue());
+	      System.out.println(panel.getBounds());
+	      //System.out.println(panel.getMaximumSize().getHeight());
+	      scroller.getVerticalScrollBar().setVisibleAmount((int)((scroller.getVerticalScrollBar().getVisibleAmount())/(2)));
+	      System.out.println(scroller.getVerticalScrollBar().getVisibleAmount());
+	      System.out.println(Movable.getBounds().getY());
+	      //scroller.getVerticalScrollBar().scrollRectToVisible(new Rectangle(200,0,568,160));
+	      //scroller.getVerticalScrollBar().setValue(500);
+	     }
+	    }
+	  );
+	  //scroller.getVerticalScrollBar().addContainerListener(new ContainerListener() {});
+
+	  */
+	 }
  private void readXML()
  {
   try {
@@ -957,15 +1230,11 @@ public class AnnotationTool1 extends JFrame {
    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
    Document doc = dBuilder.parse(fXmlFile);
    doc.getDocumentElement().normalize();
-   //System.out.println("Root element: " + doc.getDocumentElement().getNodeName());
    NodeList nList = doc.getElementsByTagName("Lex");
    for (int temp = 0; temp < nList.getLength(); temp++) {
     Node nNode = nList.item(temp);     
-    //System.out.println("Current Element: " + nNode.getNodeName());
     if (nNode.getNodeType() == Node.ELEMENT_NODE) {
      Element eElement = (Element) nNode;
-     //System.out.println("Pred: " + eElement.getElementsByTagName("Pred").item(0).getTextContent());
-     //System.out.println("Type: " + eElement.getElementsByTagName("Type").item(0).getTextContent());
      readName = eElement.getElementsByTagName("Pred").item(0).getTextContent();
      String readTypesUnparsed = eElement.getElementsByTagName("Type").item(0).getTextContent();
      int numTypes = countChar(readTypesUnparsed,'*');
@@ -982,7 +1251,6 @@ public class AnnotationTool1 extends JFrame {
        readTypes.add(readTypesUnparsed);
       }
      }
-     //System.out.println(readTypes);
     }
    }  
    NodeList nList1 = (NodeList) doc.getElementsByTagName("Type").item(1);
@@ -990,10 +1258,7 @@ public class AnnotationTool1 extends JFrame {
    readHeadIndex = "";
    for (int temp = 0; temp < nList1.getLength(); temp++) {
     Node nNode1 = nList1.item(temp); 
-    //System.out.println("\nCurrent Element: " + nNode1.getNodeName());
     if(nNode1.getNodeType() == Node.ELEMENT_NODE && !(nNode1.getNodeName().equals("Components"))) {
-     //System.out.println(nNode1.getNodeName() + ": " + nNode1.getTextContent());
-     //System.out.println(nNode1.getNodeType());
      
      if(nNode1.getNodeName().equals("Head")) {
       String readHeadUnparsed = nNode1.getTextContent();
@@ -1053,26 +1318,10 @@ public class AnnotationTool1 extends JFrame {
        RotSymZ.setSelected(true);
       else
        RotSymZ.setSelected(false);
-      
-      /*String readReflSymUnparsed = nNode1.getTextContent();
-      int numReflSym = countChar(readReflSymUnparsed,',');
-      for(int i = 0; i <= numReflSym; i++)
-      {
-       numReflSym = countChar(readReflSymUnparsed,',');
-       if(numReflSym > 0)
-       {       
-        int ind = readReflSymUnparsed.indexOf(",");
-        readReflSym.add(readReflSymUnparsed.substring(0,ind));
-        readReflSymUnparsed = readReflSymUnparsed.substring(ind+1,readReflSymUnparsed.length());
-       }
-       else if(readReflSymUnparsed.length() > 0)
-        readReflSym.add(readReflSymUnparsed);
-      }  */   
      }
      
     }
     else if(nNode1.getNodeType() == Node.ELEMENT_NODE && nNode1.getNodeName().equals("Components")) {
-     //System.out.println(nNode1.getNodeName() + ": ");
      NodeList compList = (NodeList) nNode1;
      for(int i = 0; i < compList.getLength(); i++)
      {
@@ -1094,9 +1343,7 @@ public class AnnotationTool1 extends JFrame {
    NodeList nList2 = (NodeList) doc.getElementsByTagName("Habitat").item(0);
    for (int temp = 0; temp < nList2.getLength(); temp++) {
     Node nNode2 = nList2.item(temp); 
-    //System.out.println("\nCurrent Element: " + nNode1.getNodeName());
     if(nNode2.getNodeType() == Node.ELEMENT_NODE) {
-     //System.out.println(nNode2.getNodeName() + ": ");
      NodeList intrANDextr = (NodeList) nNode2;
      for(int i = 0; i < intrANDextr.getLength(); i++)
      {
@@ -1123,23 +1370,17 @@ public class AnnotationTool1 extends JFrame {
    NodeList nList3 = (NodeList) doc.getElementsByTagName("Afford_Str").item(0);
    for (int temp = 0; temp < nList3.getLength(); temp++) {
     Node nNode3 = nList3.item(temp); 
-    //System.out.println("\nCurrent Element: " + nNode1.getNodeName());
     if(nNode3.getNodeType() == Node.ELEMENT_NODE) {
-     //System.out.println(nNode3.getNodeName() + ": ");
      NodeList affordList = (NodeList) nNode3;
      for(int i = 0; i < affordList.getLength(); i++)
      {
       Node afford = affordList.item(i);
       if(afford.getNodeType() == Node.ELEMENT_NODE) {
-       //System.out.print(afford.getNodeName() + ": ");
-       //System.out.print("Formula: " + afford.getAttributes().getNamedItem("Formula").getNodeValue());
-       //System.out.println();
        readAffords.add(afford.getAttributes().getNamedItem("Formula").getNodeValue());
       }
      }
     }
    }
-   //System.out.println(readAffords);
    
    readScale = "";
    readMovable = "";
@@ -1147,9 +1388,7 @@ public class AnnotationTool1 extends JFrame {
    NodeList nList4 = (NodeList) doc.getElementsByTagName("Embodiment").item(0);
    for (int temp = 0; temp < nList4.getLength(); temp++) {
     Node nNode4 = nList4.item(temp); 
-    //System.out.println("\nCurrent Element: " + nNode1.getNodeName());
     if(nNode4.getNodeType() == Node.ELEMENT_NODE) {
-     //System.out.println(nNode4.getNodeName() + ": " + nNode4.getTextContent());
      if(nNode4.getNodeName().equals("Scale")) {
       readScale = nNode4.getTextContent();
      }
@@ -1165,13 +1404,113 @@ public class AnnotationTool1 extends JFrame {
   reset();
  }
 
+ private void readXML1()
+ {
+  try {
+   File fXmlFile = new File(path1);
+   DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+   DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+   Document doc = dBuilder.parse(fXmlFile);
+   doc.getDocumentElement().normalize();
+   NodeList nList = doc.getElementsByTagName("Lex");
+   for (int temp = 0; temp < nList.getLength(); temp++) {
+    Node nNode = nList.item(temp);     
+    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+     Element eElement = (Element) nNode;
+     readName1 = eElement.getElementsByTagName("Pred").item(0).getTextContent();
+     String readTypesUnparsed1 = eElement.getElementsByTagName("Type").item(0).getTextContent();
+     int numTypes1 = countChar(readTypesUnparsed1,'*');
+     for(int j = 0; j <= numTypes1; j++)
+     {
+      int indJ = readTypesUnparsed1.indexOf("*");
+      if(indJ >= 0)
+      {
+       readTypes1.add(readTypesUnparsed1.substring(0,indJ));
+       readTypesUnparsed1 = readTypesUnparsed1.substring(indJ+1, readTypesUnparsed1.length());
+      }
+      else
+      {
+       readTypes1.add(readTypesUnparsed1);
+      }
+     }
+    }
+   }  
+   NodeList nList1E = (NodeList) doc.getElementsByTagName("Type").item(1);
+   readHead1 = "";
+   //readHeadIndex1 = "";
+   for (int temp = 0; temp < nList1E.getLength(); temp++) {
+    Node nNode1E = nList1E.item(temp); 
+    if(nNode1E.getNodeType() == Node.ELEMENT_NODE && !(nNode1E.getNodeName().equals("Args")) && !(nNode1E.getNodeName().equals("Body"))) {
+     
+     if(nNode1E.getNodeName().equals("Head")) {
+    	 readHead1 = nNode1E.getTextContent();
+      /*String readHeadUnparsed = nNode1.getTextContent();
+      readHead = readHeadUnparsed.substring(0, readHeadUnparsed.length()-3);
+      readHeadIndex = readHeadUnparsed.substring(readHeadUnparsed.length()-2, readHeadUnparsed.length()-1); */
+     }
+         
+    }
+    else if(nNode1E.getNodeType() == Node.ELEMENT_NODE && nNode1E.getNodeName().equals("Args")) {
+     NodeList argsList = (NodeList) nNode1E;
+     for(int i = 0; i < argsList.getLength(); i++)
+     {
+      Node nnNode1E = argsList.item(i);
+      if(nnNode1E.getNodeType() == Node.ELEMENT_NODE)
+      {
+       String unparsed = nnNode1E.getAttributes().getNamedItem("Value").getNodeValue();
+       //String name = unparsed.substring(0, unparsed.length()-3);
+       //String ind = unparsed.substring(unparsed.length()-2, unparsed.length()-1);
+       readArgs1.add(unparsed);
+       //readCompInds.add(ind);
+      }
+     }
+    }
+    else if(nNode1E.getNodeType() == Node.ELEMENT_NODE && nNode1E.getNodeName().equals("Body"))
+    {
+    	NodeList bodyList = (NodeList) nNode1E;
+        for(int i = 0; i < bodyList.getLength(); i++)
+        {
+         Node nnNode1E = bodyList.item(i);
+         if(nnNode1E.getNodeType() == Node.ELEMENT_NODE)
+         {
+          String unparsed = nnNode1E.getAttributes().getNamedItem("Value").getNodeValue();
+          //String name = unparsed.substring(0, unparsed.length()-3);
+          //String ind = unparsed.substring(unparsed.length()-2, unparsed.length()-1);
+          readBody1.add(unparsed);
+          //readCompInds.add(ind);
+         }
+        }
+    }
+    
+   }
+
+     /*NodeList nList3E = (NodeList) doc.getElementsByTagName("Body").item(0);
+   for (int temp = 0; temp < nList3E.getLength(); temp++) {
+    Node nNode3E = nList3E.item(temp); 
+    if(nNode3E.getNodeType() == Node.ELEMENT_NODE) {
+     NodeList bodyList = (NodeList) nNode3E;
+     for(int i = 0; i < bodyList.getLength(); i++)
+     {
+      Node subevent = bodyList.item(i);
+      if(subevent.getNodeType() == Node.ELEMENT_NODE) {
+       readBody1.add(subevent.getAttributes().getNamedItem("Value").getNodeValue());
+      }
+     }
+    }
+   } */
+   
+      }
+  catch (Exception e) {
+      e.printStackTrace();
+     }
+  reset1();
+ } 
+
  private void reset()
  {
   panel.setVisible(false);
   int n1_goal = readTypes.size();
   int n2_goal = readComponents.size();
-  int n3_goal = readRotatSym.size();
-  int n4_goal = readReflSym.size();
   int n5_goal = readIntrinsicNames.size();
   int n6_goal = readExtrinsicNames.size();
   int n7_goal = readAffords.size();
@@ -1179,7 +1518,6 @@ public class AnnotationTool1 extends JFrame {
   Name.setText(readName);
   Head.setSelectedItem(readHead);
   HeadIndex.setText(readHeadIndex);
-  System.out.println(readScale);
   Scale.setSelectedItem(readScale);
   if(readMovable.equals("true"))
    Movable.setSelected(true);
@@ -1196,16 +1534,6 @@ public class AnnotationTool1 extends JFrame {
    CompRemove.get(CompRemove.size()-1).doClick();
    n2 = CompNames.size();
   }
-  /*while(n3 > 0)
-  {
-   RotSymRemove.get(RotSymRemove.size()-1).doClick();
-   n3 = RotSym.size();
-  }
-  while(n4 > 0)
-  {
-   ReflSymRemove.get(ReflSymRemove.size()-1).doClick();
-   n4 = ReflSym.size();
-  }*/
   while(n5 > 0)
   {
    IntrinsicRemove.get(IntrinsicRemove.size()-1).doClick();
@@ -1234,16 +1562,6 @@ public class AnnotationTool1 extends JFrame {
    CompAdd.doClick();
    n2 = CompNames.size();
   }
-  /*while(n3 < n3_goal)
-  {
-   RotSymAdd.doClick();
-   n3 = RotSym.size();
-  }
-  while(n4 < n4_goal)
-  {
-   ReflSymAdd.doClick();
-   n4 = ReflSym.size();
-  }*/
   while(n5 < n5_goal)
   {
    IntrinsicAdd.doClick();
@@ -1259,7 +1577,6 @@ public class AnnotationTool1 extends JFrame {
    AffordancesAdd.doClick();
    n7 = Affordances.size();
   }
-  
   for(int i = 0; i < n1; i++)
   {
    Types.get(i).setSelectedItem(readTypes.get(i));
@@ -1275,14 +1592,7 @@ public class AnnotationTool1 extends JFrame {
    else
     Concavity.get(i).setSelected(false);
   }
-  /*for(int i = 0; i < n3; i++)
-  {
-   RotSym.get(i).setSelectedItem(readRotatSym.get(i));
-  }
-  for(int i = 0; i < n4; i++)
-  {
-   ReflSym.get(i).setSelectedItem(readReflSym.get(i));
-  }*/
+
   for(int i = 0; i < n5; i++)
   {
    IntrinsicNames.get(i).setText(readIntrinsicNames.get(i));
@@ -1300,56 +1610,134 @@ public class AnnotationTool1 extends JFrame {
   updateLocation();
   panel.setVisible(true);
  }
- 
+ private void reset1()
+ {
+  eventPanel.setVisible(false);
+  int n1_goal = readTypes1.size();
+  int n2_goal = readArgs1.size();
+  int n3_goal = readBody1.size();
+  
+  Name1.setText(readName1);
+  Head1.setSelectedItem(readHead1);
+  HeadIndex1.setText("");
+   
+  while(n1E > 0)
+  {
+   TypeRemove1.get(TypeRemove1.size()-1).doClick();
+   n1E = Types1.size();
+  }
+  while(n2E > 0)
+  {
+   ArgRemove.get(ArgRemove.size()-1).doClick();
+   n2E = ArgNames.size();
+  }
+  while(n3E > 0)
+  {
+   BodyRemove.get(BodyRemove.size()-1).doClick();
+   n3E = BodyNames.size();
+  }
+   
+  while(n1E < n1_goal)
+  {
+   TypeAdd1.doClick();
+   n1E = Types1.size();
+  }
+  while(n2E < n2_goal)
+  {
+   ArgAdd.doClick();
+   n2E = ArgNames.size();
+  }
+  while(n3E < n3_goal)
+  {
+   BodyAdd.doClick();
+   n3E = BodyNames.size();
+  }
+  
+
+  for(int i = 0; i < n1E; i++)
+  {
+   Types1.get(i).setSelectedItem(readTypes1.get(i));
+  }
+  for(int i = 0; i < n2E; i++)
+  {
+   ArgNames.get(i).setText(readArgs1.get(i));
+   ArgNames.get(i).validate();
+   //ArgInds.get(i).setText(readArgInds1.get(i));
+   ArgInds.get(i).validate();
+  }
+
+  for(int i = 0; i < n3E; i++)
+  {
+   BodyNames.get(i).setText(readBody1.get(i));
+   //BodyInds.get(i).setText(readBodyValues1.get(i));
+  }
+  
+  updateLocation1();
+  eventPanel.setVisible(true);
+ }
+
+ private void checkNullNodes(Node v)
+ {
+	 if(v.equals(null))
+		 System.out.print("");
+	 else if(v.getNodeValue()==null) {
+		 v.setNodeValue("");
+	 }
+	 if(!v.hasChildNodes())
+		 System.out.print("");
+	 else
+	 {
+		 for(int i = 0; i < v.getChildNodes().getLength(); i++)
+			 checkNullNodes(v.getChildNodes().item(i));
+	 }
+ }
  private void writeXML()
  {
   try {
-   DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-   DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-   Document document = documentBuilder.newDocument();
+	DocumentBuilderFactory documentFactory2 = DocumentBuilderFactory.newInstance();
+	DocumentBuilder documentBuilder2 = documentFactory2.newDocumentBuilder();
+	Document document2 = documentBuilder2.newDocument();
 
    // root element
-   Element root = document.createElement("VoxML");
-   document.appendChild(root);
+   Element root2 = document2.createElement("VoxML");
+   document2.appendChild(root2);
    //Entity type element
-   Element Entity = document.createElement("Entity");
-   Attr EntityType = document.createAttribute("Type");
-   EntityType.setValue("Object");
-   Entity.setAttributeNode(EntityType);
-   root.appendChild(Entity);
+   Element Entity2 = document2.createElement("Entity");
+   Attr EntityType2 = document2.createAttribute("Type");
+   EntityType2.setValue("Object");
+   Entity2.setAttributeNode(EntityType2);
+   root2.appendChild(Entity2);
    // Lex element
-   Element Lex = document.createElement("Lex");
-   root.appendChild(Lex);
+   Element Lex2 = document2.createElement("Lex");
+   root2.appendChild(Lex2);
    // Type Element
-   Element Type1 = document.createElement("Type");
-   root.appendChild(Type1);
+   Element Type2a = document2.createElement("Type");
+   root2.appendChild(Type2a);
    // Pred element
-   Element Pred = document.createElement("Pred");
-   Pred.appendChild(document.createTextNode(Name.getText()));
-   Lex.appendChild(Pred);
+   Element Pred2 = document2.createElement("Pred");
+   Pred2.appendChild(document2.createTextNode(Name.getText()));
+   Lex2.appendChild(Pred2);
    // Type element
-   Element Type = document.createElement("Type");
-   Type.appendChild(document.createTextNode(typesString));
-   Lex.appendChild(Type);
+   Element Type2b = document2.createElement("Type");
+   Type2b.appendChild(document2.createTextNode(typesString));
+   Lex2.appendChild(Type2b);
    // Head element
-   System.out.println(headString);
-   Element Head = document.createElement("Head");
-   Head.appendChild(document.createTextNode(headString));
-   Type1.appendChild(Head);
+   Element Head2 = document2.createElement("Head");
+   Head2.appendChild(document2.createTextNode(headString));
+   Type2a.appendChild(Head2);
    // Components element
-   Element Components = document.createElement("Components");
-   System.out.println(componentsStrings);
+   Element Components2 = document2.createElement("Components");
    for(int i = 0; i < n2; i++)
    {
-    Element Component = document.createElement("Component");
-    Attr Value = document.createAttribute("Value");
+    Element ComponentA = document2.createElement("Component");
+    Attr Value = document2.createAttribute("Value");
     Value.setValue(componentsStrings.get(i));
-    Component.setAttributeNode(Value);
-    Components.appendChild(Component);
+    ComponentA.setAttributeNode(Value);
+    Components2.appendChild(ComponentA);
    }
-   Type1.appendChild(Components);
+   Type2a.appendChild(Components2);
    // More elements
-   Element Concavity1 = document.createElement("Concavity");
+   Element Concavity2 = document2.createElement("Concavity");
    String concavityString = "";
    for(int i = 0; i < n2; i++)
    {
@@ -1358,87 +1746,165 @@ public class AnnotationTool1 extends JFrame {
    }
    if(concavityString.length()>0)
     concavityString = concavityString.substring(0,concavityString.length()-1);
-   //System.out.println(concavityString);
-   Concavity1.appendChild(document.createTextNode(concavityString));
-   Type1.appendChild(Concavity1);
-   Element RotatSym = document.createElement("RotatSym");
-   RotatSym.appendChild(document.createTextNode(rotSymString));
-   Type1.appendChild(RotatSym);
-   Element ReflSym = document.createElement("ReflSym");   
-   ReflSym.appendChild(document.createTextNode(reflSymString));
-   Type1.appendChild(ReflSym);
-   Element Habitat = document.createElement("Habitat");
-   root.appendChild(Habitat);
-   Element Intrinsic = document.createElement("Intrinsic");
-   Habitat.appendChild(Intrinsic);
-   Element Extrinsic = document.createElement("Extrinsic");
-   Habitat.appendChild(Extrinsic);
+   Concavity2.appendChild(document2.createTextNode(concavityString));
+   Type2a.appendChild(Concavity2);
+   Element RotatSym2 = document2.createElement("RotatSym");
+   RotatSym2.appendChild(document2.createTextNode(rotSymString));
+   Type2a.appendChild(RotatSym2);
+   Element ReflSym2 = document2.createElement("ReflSym");   
+   ReflSym2.appendChild(document2.createTextNode(reflSymString));
+   Type2a.appendChild(ReflSym2);
+   Element Habitat2 = document2.createElement("Habitat");
+   root2.appendChild(Habitat2);
+   Element Intrinsic2 = document2.createElement("Intrinsic");
+   Habitat2.appendChild(Intrinsic2);
+   Element Extrinsic2 = document2.createElement("Extrinsic");
+   Habitat2.appendChild(Extrinsic2);
    for(int i = 0; i < n5; i++)
    {
-    Element Intr = document.createElement("Intr");
-    Attr Value = document.createAttribute("Value");
+    Element Intr = document2.createElement("Intr");
+    Attr Value = document2.createAttribute("Value");
     Value.setValue(IntrinsicValues.get(i).getText());
-    Attr Name = document.createAttribute("Name");
+    Attr Name = document2.createAttribute("Name");
     Name.setValue(IntrinsicNames.get(i).getText());
     Intr.setAttributeNode(Name);
     Intr.setAttributeNode(Value);
-    Intrinsic.appendChild(Intr);
+    Intrinsic2.appendChild(Intr);
    }
    for(int i = 0; i < n6; i++)
    {
-    Element Extr = document.createElement("Extr");
-    Attr Value = document.createAttribute("Value");
+    Element Extr = document2.createElement("Extr");
+    Attr Value = document2.createAttribute("Value");
     Value.setValue(IntrinsicValues.get(i).getText());
-    Attr Name = document.createAttribute("Name");
+    Attr Name = document2.createAttribute("Name");
     Name.setValue(IntrinsicNames.get(i).getText());
     Extr.setAttributeNode(Name);
     Extr.setAttributeNode(Value);
-    Extrinsic.appendChild(Extr);
+    Extrinsic2.appendChild(Extr);
    }
-   Element Afford_Str = document.createElement("Afford_Str");
-   root.appendChild(Afford_Str);
-   Element AffordancesElement = document.createElement("Affordances");
-   Afford_Str.appendChild(AffordancesElement);
+   Element Afford_Str2 = document2.createElement("Afford_Str");
+   root2.appendChild(Afford_Str2);
+   Element AffordancesElement2 = document2.createElement("Affordances");
+   Afford_Str2.appendChild(AffordancesElement2);
    for(int i = 0; i < n7; i++)
    {
-    Element Affordance = document.createElement("Affordance");
-    Attr Formula = document.createAttribute("Formula");
+    Element Affordance = document2.createElement("Affordance");
+    Attr Formula = document2.createAttribute("Formula");
     Formula.setValue(Affordances.get(i).getText());
     Affordance.setAttributeNode(Formula);
-    AffordancesElement.appendChild(Affordance);
+    AffordancesElement2.appendChild(Affordance);
    }
-   Element Embodiment = document.createElement("Embodiment");
-   root.appendChild(Embodiment);
-   Element ScaleElement = document.createElement("Scale");
-   ScaleElement.appendChild(document.createTextNode((String) Scale.getSelectedItem()));
-   Embodiment.appendChild(ScaleElement);
-   Element MovableElement = document.createElement("Movable");
+   Element Embodiment2 = document2.createElement("Embodiment");
+   root2.appendChild(Embodiment2);
+   Element ScaleElement2 = document2.createElement("Scale");
+   ScaleElement2.appendChild(document2.createTextNode((String) Scale.getSelectedItem()));
+   Embodiment2.appendChild(ScaleElement2);
+   Element MovableElement2 = document2.createElement("Movable");
    String MovableString;
    if(Movable.isSelected())
     MovableString = "true";
    else
     MovableString = "false";   
-   MovableElement.appendChild(document.createTextNode(MovableString));
-   Embodiment.appendChild(MovableElement);
+   MovableElement2.appendChild(document2.createTextNode(MovableString));
+   Embodiment2.appendChild(MovableElement2);
    
    // create the xml file
    //transform the DOM Object to an XML File
-   TransformerFactory transformerFactory = TransformerFactory.newInstance();
-   Transformer transformer = transformerFactory.newTransformer();
-   DOMSource domSource = new DOMSource(document);
-   String xmlFilePath = "c:\\Users\\ruros\\Desktop\\Rutia\\Brandeis\\CL Project\\XML Files\\" + Name.getText() + ".xml";
-   StreamResult streamResult = new StreamResult(new File(xmlFilePath ));
-   transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-   transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,"yes");
-   transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-   transformer.transform(domSource, streamResult);
+   TransformerFactory transformerFactory2 = TransformerFactory.newInstance();
+   Transformer transformer2 = transformerFactory2.newTransformer();
+   DOMSource domSource2 = new DOMSource(document2);
+   String xmlFilePath2 = "c:\\Users\\ruros\\Desktop\\Rutia\\Brandeis\\CL Project\\XML Files\\" + Name.getText() + ".xml";
+   File file2 = new File(xmlFilePath2);
+   StreamResult streamResult = new StreamResult(file2);
+   transformer2.setOutputProperty(OutputKeys.INDENT, "yes");
+   transformer2.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,"yes");
+   transformer2.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+   checkNullNodes(document2);
+   transformer2.transform(domSource2, streamResult);
   } catch (ParserConfigurationException pce) {
    pce.printStackTrace();
   } catch (TransformerException tfe) {
    tfe.printStackTrace();
   }
  }
- 
+ private void writeXML1()
+ {
+  try {
+   DocumentBuilderFactory documentFactory1 = DocumentBuilderFactory.newInstance();
+   DocumentBuilder documentBuilder1 = documentFactory1.newDocumentBuilder();
+   Document document1 = documentBuilder1.newDocument();
+
+   // root element
+   Element root = document1.createElement("VoxML");
+   document1.appendChild(root);
+   //Entity type element
+   Element Entity = document1.createElement("Entity");
+   Attr EntityType = document1.createAttribute("Type");
+   EntityType.setValue("Event");
+   Entity.setAttributeNode(EntityType);
+   root.appendChild(Entity);
+   // Lex element
+   Element Lex = document1.createElement("Lex");
+   root.appendChild(Lex);
+   // Type Element
+   Element Type1 = document1.createElement("Type");
+   root.appendChild(Type1);
+   // Pred element
+   Element Pred = document1.createElement("Pred");
+   Pred.appendChild(document1.createTextNode(Name1.getText()));
+   Lex.appendChild(Pred);
+   // Type element
+   Element Type = document1.createElement("Type");
+   Type.appendChild(document1.createTextNode(typesString1));
+   Lex.appendChild(Type);
+   // Head element
+   Element Head = document1.createElement("Head");
+   Head.appendChild(document1.createTextNode(headString1));
+   Type1.appendChild(Head);
+   // Args element
+   Element Args = document1.createElement("Args");
+   for(int i = 0; i < n2E; i++)
+   {
+    Element Arg = document1.createElement("Arg");
+    Attr Value = document1.createAttribute("Value");
+    Value.setValue(argsStrings.get(i));
+    Arg.setAttributeNode(Value);
+    Args.appendChild(Arg);
+   }
+   Type1.appendChild(Args);
+   // Body element
+   Element Body = document1.createElement("Body");
+   for(int i = 0; i < n3E; i++)
+   {
+    Element Subevent = document1.createElement("Subevent");
+    Attr Value = document1.createAttribute("Value");
+    Value.setValue(bodyStrings.get(i));
+    Subevent.setAttributeNode(Value);
+    Body.appendChild(Subevent);
+   }
+   Type1.appendChild(Body);
+   System.out.println("BODY STRINGS:" + bodyStrings.toString());
+   // create the xml file
+   //transform the DOM Object to an XML File
+   TransformerFactory transformerFactory1 = TransformerFactory.newInstance();
+   Transformer transformer1 = transformerFactory1.newTransformer();
+   DOMSource domSource1 = new DOMSource(document1);
+   String xmlFilePath = "c:\\Users\\ruros\\Desktop\\Rutia\\Brandeis\\CL Project\\XML Files\\" + Name1.getText() + ".xml";
+   File file = new File(xmlFilePath);
+   checkNullNodes(document1);
+   StreamResult streamResult = new StreamResult(file);
+   transformer1.setOutputProperty(OutputKeys.INDENT, "yes");
+   transformer1.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,"yes");
+   transformer1.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+   transformer1.transform(domSource1, streamResult);
+  } catch (ParserConfigurationException pce) {
+   pce.printStackTrace();
+  } catch (TransformerException tfe) {
+   tfe.printStackTrace();
+  }
+  
+ } 
+
  private void updateLocation()
  {
   if(!panel.isVisible() && indicator == 0)
@@ -1475,24 +1941,12 @@ public class AnnotationTool1 extends JFrame {
       Concavity.get(k).setBounds(255,n0+170+30*n1+30*k,80,25);
      }
   RotSymLabel.setBounds(20,n0+190+30*n1+30*n2,200,25);
-  //RotSymAdd.setBounds(300,190+30*n1+30*n2,80,25);
   n3 = 1;
-  /*for(int k = 0; k < n3; k++)
-     {
-      RotSym.get(k).setBounds(40,220+30*n1+30*n2+30*k,150,25);
-      RotSymRemove.get(k).setBounds(195,220+30*n1+30*n2+30*k,80,25);  
-     }*/
   RotSymX.setBounds(40,n0+220+30*n1+30*n2,50,25);
   RotSymY.setBounds(145,n0+220+30*n1+30*n2,50,25);
   RotSymZ.setBounds(250,n0+220+30*n1+30*n2,50,25);
   ReflSymLabel.setBounds(20,n0+250+30*n1+30*n2,200,25);
-  //ReflSymAdd.setBounds(300,220+30*n1+30*n2,80,25);
   n4 = 1;
-  /*for(int k = 0; k < n4; k++)
-     /{
-      ReflSym.get(k).setBounds(40,250+30*n1+30*n2+30*n3+30*k,150,25);
-      ReflSymRemove.get(k).setBounds(195,250+30*n1+30*n2+30*n3+30*k,80,25);  
-     }*/
   ReflSymXY.setBounds(40,n0+280+30*n1+30*n2,50,25);
   ReflSymYZ.setBounds(145,n0+280+30*n1+30*n2,50,25);
   ReflSymXZ.setBounds(250,n0+280+30*n1+30*n2,50,25);
@@ -1506,26 +1960,26 @@ public class AnnotationTool1 extends JFrame {
   n5 = IntrinsicNames.size();
   n6 = ExtrinsicNames.size();
   for(int k = 0; k < n5; k++)
-     {
-   IntrinsicNames.get(k).setBounds(60,n0+350+30*n1+30*n2+30*n3+30*n4+30*k,60,25);
+  {   
+	  IntrinsicNames.get(k).setBounds(60,n0+350+30*n1+30*n2+30*n3+30*n4+30*k,60,25);
       IntrinsicValues.get(k).setBounds(125,n0+350+30*n1+30*n2+30*n3+30*n4+30*k,60,25);
       IntrinsicRemove.get(k).setBounds(190,n0+350+30*n1+30*n2+30*n3+30*n4+30*k,80,25);
-     }
+  }
   for(int k = 0; k < n6; k++)
-     {
-   ExtrinsicNames.get(k).setBounds(60,n0+380+30*n1+30*n2+30*n3+30*n4+30*n5+30*k,60,25);
+  {
+	  ExtrinsicNames.get(k).setBounds(60,n0+380+30*n1+30*n2+30*n3+30*n4+30*n5+30*k,60,25);
       ExtrinsicValues.get(k).setBounds(125,n0+380+30*n1+30*n2+30*n3+30*n4+30*n5+30*k,60,25);
       ExtrinsicRemove.get(k).setBounds(190,n0+380+30*n1+30*n2+30*n3+30*n4+30*n5+30*k,80,25); 
-     }
+  }
   
   AffordancesLabel.setBounds(20,n0+380+30*n1+30*n2+30*n3+30*n4+30*n5+30*n6,100,25);
   AffordancesAdd.setBounds(300,n0+380+30*n1+30*n2+30*n3+30*n4+30*n5+30*n6,80,25);
   n7 = Affordances.size();
   for(int k = 0; k < n7; k++)
-     {
-   Affordances.get(k).setBounds(40,n0+410+30*n1+30*n2+30*n3+30*n4+30*n5+30*n6+30*k,120,25);
+  {
+	  Affordances.get(k).setBounds(40,n0+410+30*n1+30*n2+30*n3+30*n4+30*n5+30*n6+30*k,120,25);
       AffordancesRemove.get(k).setBounds(170,n0+410+30*n1+30*n2+30*n3+30*n4+30*n5+30*n6+30*k,80,25);
-     }
+  }
   
   ScaleLabel.setBounds(20,n0+410+30*n1+30*n2+30*n3+30*n4+30*n5+30*n6+30*n7,80,25);
   Scale.setBounds(105,n0+410+30*n1+30*n2+30*n3+30*n4+30*n5+30*n6+30*n7,100,25);
@@ -1535,14 +1989,58 @@ public class AnnotationTool1 extends JFrame {
   if(object.isVisible())
     object.setBounds(20,10,150,25);
   if(event.isVisible())
-    event.setBounds(175,10,150,25);
-  if(object1.isVisible())
-    object1.setBounds(20,10,150,25);
-  if(event1.isVisible())
-    event1.setBounds(175,10,150,25);
-  
+    event.setBounds(175,10,150,25);  
  } 
 
+ private void updateLocation1()
+ {
+	  int n0E = 35;
+	  NameLabel1.setBounds(20,n0E+20,40,25);
+	  Name1.setBounds(65,n0E+20,80,25);
+	  //Save.setBounds(300,n0+20,120,25);
+	  //Load.setBounds(440,n0+20,120,25);
+	  TypeLabel1.setBounds(20,n0E+50,40,25);
+	  TypeAdd1.setBounds(300,n0E+50,80,25);
+	  n1E = Types1.size();
+	  for(int k = 0; k < n1E; k++)
+	     {
+	      Types1.get(k).setBounds(40,n0E+80+30*k,150,25);
+	      TypeRemove1.get(k).setBounds(195,n0E+80+30*k,80,25);
+	        }
+	    
+	  if(object1.isVisible())
+	    object1.setBounds(20,10,150,25);
+	  if(event1.isVisible())
+	    event1.setBounds(175,10,150,25);
+	  HeadLabel1.setBounds(20,n0E+85+30*n1E,40,25);
+	  Head1.setBounds(65,n0E+85+30*n1E,150,25);
+	  HeadIndex1.setBounds(220,n0E+85+30*n1E,40,25);
+	  ArgsLabel.setBounds(20,n0E+120+30*n1E,100,25);
+	  ArgAdd.setBounds(300,n0E+120+30*n1E,80,25);
+	  ArgsNameLabel.setBounds(40,n0E+150+30*n1E,60,25);
+	  ArgsIndexLabel.setBounds(105,n0E+150+30*n1E,60,25);
+	  n2E = ArgNames.size();
+	  for(int k = 0; k < n2E; k++)
+	     {
+	      ArgNames.get(k).setBounds(40,n0E+170+30*n1E+30*k,60,25);
+	      ArgInds.get(k).setBounds(105,n0E+170+30*n1E+30*k,60,25);
+	      ArgRemove.get(k).setBounds(170,n0E+170+30*n1E+30*k,80,25);
+	     }
+	  BodyLabel.setBounds(20,n0E+180+30*n1E+30*n2E,100,25);
+	  BodyAdd.setBounds(300,n0E+210+30*n1E+30*n2E,80,25);
+	  BodyNameLabel.setBounds(40,n0E+210+30*n1E+30*n2E,60,25);
+	  BodyIndexLabel.setBounds(105,n0E+210+30*n1E+30*n2E,60,25);
+	  n3E = BodyNames.size();
+	  for(int k = 0; k < n3E; k++)
+	     {
+	      BodyNames.get(k).setBounds(40,n0E+230+30*n1E+30*n2E+30*k,60,25);
+	      BodyInds.get(k).setBounds(105,n0E+230+30*n1E+30*n2E+30*k,60,25);
+	      BodyRemove.get(k).setBounds(170,n0E+230+30*n1E+30*n2E+30*k,80,25);
+	     }
+	  EmbeddingSpaceLabel.setBounds(20,270+30*n1E+30*n2E+30*n3E,160,25);
+	  EmbeddingSpace.setBounds(40,300+30*n1E+30*n2E+30*n3E,80,25);	  
+ }
+ 
  private void updateTypes(){
   if(n1>=1)
   {
@@ -1569,7 +2067,6 @@ public class AnnotationTool1 extends JFrame {
            typesString = "";
           updateLocation(); 
           getContentPane().validate();
-             //System.out.println(typesString);
          }
            }
       );
@@ -1610,6 +2107,74 @@ public class AnnotationTool1 extends JFrame {
       }
   }
     }
+ 
+ private void updateTypes1()
+ {
+	 if(n1E>=1)
+	  {
+	      for(int i = 0; i < n1E; i++)
+	      {
+	       if(i<n1E)
+	       {
+	        nE = i;
+	        if(nE < Types1.size() && Types1.size() > 0)
+	        {
+	         Types1.get(i).addActionListener(
+	           new ActionListener() {
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	          if(n1E > 0)
+	          {
+	           typesString1 = (String) Types1.get(0).getSelectedItem();
+	           for(int j = 1; j < n1E; j++)
+	           {
+	            typesString1 = typesString1 + "*" + (String) Types1.get(j).getSelectedItem();
+	           }
+	          }
+	          else
+	           typesString1 = "";
+	          updateLocation1(); 
+	          getContentPane().validate();
+	         }
+	           }
+	      );
+	           TypeRemove1.get(i).addActionListener(
+	           new ActionListener() {
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	          if(Types1.size() > 0 && nE < Types1.size())
+	          {
+	             Types1.get(nE).setEnabled(false);
+	             TypeRemove1.get(nE).setEnabled(false);
+	             Types1.get(nE).setVisible(false);
+	             TypeRemove1.get(nE).setVisible(false);
+	             eventPanel.remove(Types1.get(nE));
+	             eventPanel.remove(TypeRemove1.get(nE));          
+	             eventPanel.revalidate();
+	             eventPanel.repaint();
+	              Types1.remove(nE);
+	              TypeRemove1.remove(nE);          
+	              updateTypes1();
+	              n1E = Types1.size();
+	              for(int k = 0; k < n1E; k++)
+	              {
+	               Types1.get(k).setBounds(40,80+30*k,150,25);
+	              }
+	              if(n1E<2)
+	               TypeAdd1.setVisible(true);
+	              updateLocation1();
+	          }
+	         }
+	           }
+	      );
+	        }
+	       }
+	       n1E = Types1.size();
+	       if(i>=n1E-1)
+	        break;
+	      }
+	  }
+ }
 
  private void updateRotSym(){
   rotSymString = "";
@@ -1638,7 +2203,6 @@ public class AnnotationTool1 extends JFrame {
    rotSymString = "Z";
   else
    rotSymString = "";
-  System.out.println("ROT SYM: " + rotSymString);
   updateLocation();
     }
  
@@ -1670,71 +2234,8 @@ public class AnnotationTool1 extends JFrame {
   else
    reflSymString = "";
   updateLocation();
-  System.out.println("REFL SYM: " + reflSymString);
-  /*if(n4>=1)
-  {
-      for(int i = 0; i < n4; i++)
-      {
-       if(i<n4)
-       {
-        int n = i;
-        if(n < ReflSym.size() && ReflSym.size() > 0)
-        {
-         ReflSym.get(i).addActionListener(
-           new ActionListener() {
-         @Override
-         public void actionPerformed(ActionEvent e) {
-          if(n4 > 0)
-          {
-           reflSymString = (String) ReflSym.get(0).getSelectedItem();
-           for(int j = 1; j < n4; j++)
-           {
-            reflSymString = reflSymString + "," + (String) ReflSym.get(j).getSelectedItem();
-           }
-          }
-          else
-           reflSymString = "";
-          updateLocation(); 
-          getContentPane().validate();
-             System.out.println(reflSymString);
-         }
-           }
-      );
-           ReflSymRemove.get(i).addActionListener(
-           new ActionListener() {
-         @Override
-         public void actionPerformed(ActionEvent e) {
-          if(ReflSym.size() > 0 && n < ReflSym.size())
-          {
-           ReflSym.get(n).setEnabled(false);
-             ReflSymRemove.get(n).setEnabled(false);
-             ReflSym.get(n).setVisible(false);
-             ReflSymRemove.get(n).setVisible(false);
-           panel.remove(ReflSym.get(n));
-              panel.remove(ReflSymRemove.get(n));          
-              panel.revalidate();
-              panel.repaint();
-              ReflSym.remove(n);
-              ReflSymRemove.remove(n);          
-              updateReflSym();
-              n4 = ReflSym.size();
-              if(n4<3)
-               ReflSymAdd.setVisible(true);
-              updateLocation();
-          }
-         }
-           }
-      );
-        }
-       }
-       n4 = ReflSym.size();
-       if(i>=n4-1)
-        break;
-      }
-  }*/
-    }
+ }
 
- 
  private void updateComponents(){
   componentsStrings = new ArrayList<String>();
   for(int j = 0; j < CompNames.size(); j++)
@@ -1814,6 +2315,164 @@ public class AnnotationTool1 extends JFrame {
   }
     }
 
+ private void updateArgs(){
+	  argsStrings = new ArrayList<String>();
+	  String argString;
+	  for(int j = 0; j < ArgNames.size(); j++)
+	  {
+		  if(ArgInds.get(j).getText()==null || ArgInds.get(j).getText().equals("") || ArgInds.get(j).getText().equals(null))
+			  argString = ArgNames.get(j).getText() + "[" + ArgInds.get(j).getText() + "]";
+		  else
+			  argString = ArgNames.get(j).getText();
+		  argsStrings.add(argString);
+	  }
+	  if(n2E>=1)
+	  {
+	      for(int i = 0; i < n2E; i++)
+	      {
+	       if(i<n2E)
+	       {
+	        nE = i;
+	        if(nE < ArgNames.size() && ArgNames.size() > 0)
+	        {
+	        	ArgNames.get(i).addActionListener(
+	           new ActionListener() {
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	          updateArgs();
+	          updateLocation1(); 
+	          getContentPane().validate();
+	         }
+	           }
+	      );
+	         ArgInds.get(i).addActionListener(
+	           new ActionListener() {
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	          updateArgs();
+	          updateLocation1(); 
+	          getContentPane().validate();
+	         }
+	           }
+	      );
+	         ArgRemove.get(i).addActionListener(
+	           new ActionListener() {
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	          if(ArgNames.size() > 0 && nE < ArgNames.size())
+	          {
+	           ArgNames.get(nE).setEnabled(false);
+	           ArgInds.get(nE).setEnabled(false);
+	           ArgRemove.get(nE).setEnabled(false);
+
+	           ArgNames.get(nE).setVisible(false);
+	           ArgInds.get(nE).setVisible(false);
+	           ArgRemove.get(nE).setVisible(false);
+
+	           eventPanel.remove(ArgNames.get(nE));
+	           eventPanel.remove(ArgInds.get(nE));
+	           eventPanel.remove(ArgRemove.get(nE)); 
+
+	           eventPanel.revalidate();
+	           eventPanel.repaint();
+	           ArgNames.remove(nE);
+	           ArgInds.remove(nE);
+	           ArgRemove.remove(nE);  
+
+	              updateArgs();
+	              n2E = ArgNames.size();
+	              updateLocation1();           }
+	         }
+	           }
+	      );
+	        }
+	       }
+	       n2E = ArgNames.size();
+	       if(i>=n2E-1)
+	        break;
+	      }
+	  }
+	    }
+
+ private void updateBody(){
+	  bodyStrings = new ArrayList<String>();
+	  String bodyString;
+	  for(int j = 0; j < BodyNames.size(); j++)
+	  {
+		 if(BodyInds.get(j).getText()==null || BodyInds.get(j).getText().equals("") || BodyInds.get(j).getText().equals(null))
+			 bodyString = BodyNames.get(j).getText() + "[" + BodyInds.get(j).getText() + "]";
+		 else
+			 bodyString = BodyNames.get(j).getText();
+	   bodyStrings.add(bodyString);
+	  }
+	  if(n3E>=1)
+	  {
+	      for(int i = 0; i < n3E; i++)
+	      {
+	       if(i<n3E)
+	       {
+	        nE = i;
+	        if(nE < BodyNames.size() && BodyNames.size() > 0)
+	        {
+	        	BodyNames.get(i).addActionListener(
+	           new ActionListener() {
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	          updateBody();
+	          updateLocation1(); 
+	          getContentPane().validate();
+	         }
+	           }
+	      );
+	        	BodyInds.get(i).addActionListener(
+	           new ActionListener() {
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	          updateBody();
+	          updateLocation1(); 
+	          getContentPane().validate();
+	         }
+	           }
+	      );
+	        	BodyRemove.get(i).addActionListener(
+	           new ActionListener() {
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	          if(BodyNames.size() > 0 && nE < BodyNames.size())
+	          {
+	        	  BodyNames.get(nE).setEnabled(false);
+	        	  BodyInds.get(nE).setEnabled(false);
+	        	  BodyRemove.get(nE).setEnabled(false);
+
+	        	  BodyNames.get(nE).setVisible(false);
+	        	  BodyInds.get(nE).setVisible(false);
+	        	  BodyRemove.get(nE).setVisible(false);
+
+	           eventPanel.remove(BodyNames.get(nE));
+	           eventPanel.remove(BodyInds.get(nE));
+	           eventPanel.remove(BodyRemove.get(nE)); 
+
+	           eventPanel.revalidate();
+	           eventPanel.repaint();
+	           BodyNames.remove(nE);
+	           BodyInds.remove(nE);
+	           BodyRemove.remove(nE);  
+
+	              updateBody();
+	              n3E = BodyNames.size();
+	              updateLocation1();           }
+	         }
+	           }
+	      );
+	        }
+	       }
+	       n3E = BodyNames.size();
+	       if(i>=n3E-1)
+	        break;
+	      }
+	  }
+	    } 
+
  private void updateAffordances(){
   affordanceStrings = new ArrayList<String>();
   for(int j = 0; j < Affordances.size(); j++)
@@ -1874,7 +2533,6 @@ public class AnnotationTool1 extends JFrame {
   }
     }
 
- 
  private void updateHabitats(){
   intrinsicNameStrings = new ArrayList<String>();
   intrinsicValueStrings = new ArrayList<String>();
@@ -2026,9 +2684,11 @@ public class AnnotationTool1 extends JFrame {
   }
   
     }
+
  public static void main(String[] args) {
   new AnnotationTool1().setVisible(true);
  }
+ 
  public static int countChar(String str, char c)
  {
      int count = 0;
@@ -2036,6 +2696,7 @@ public class AnnotationTool1 extends JFrame {
      { if(str.charAt(i) == c) {count++;} }
      return count;
  }
+ 
  private static int countString(String str1, String str2) {
   int count = 0;
   while(str1.indexOf(str2)>-1)
