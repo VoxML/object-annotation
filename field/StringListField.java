@@ -20,6 +20,20 @@ public class StringListField extends AnnotationField<List<String>> {
         this.listSize = listSize;
     }
 
+    public List<String> setValue(int i, String value)
+    {
+        List<String> newValue = this.getValue();
+        newValue.set(i, value);
+        this.setValue(newValue);
+        return newValue;
+    }
+
+    public void add(String value)
+    {
+        this.getValue().add(value);
+        listSize++;
+    }
+
     public StringListField(String key) {
         super(key, new ArrayList<>());
     }

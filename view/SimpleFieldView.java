@@ -17,11 +17,11 @@ public class SimpleFieldView<T extends StringField> extends JPanel {
         input.setText(t.getValue());
         input.setBounds(Dimensions.SINGLE_STRING_VAL_DIM);
         input.addActionListener(new ActionListener() {
-                                    @Override
-                                    public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                                         t.setValue(input.getText());
                                     }
-                                }
+        }
         );
         add(label);
         add(input);
