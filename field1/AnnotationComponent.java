@@ -3,9 +3,6 @@ package field1;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 
 public class AnnotationComponent {
     //includes buttons as well as fields
@@ -14,6 +11,7 @@ public class AnnotationComponent {
     protected AnnotationComponent next; //vertically next component
     protected JPanel panel;
     protected ArrayList<AnnotationComponent> set;
+    ArrayList<AnnotationComponent> backupSet = new ArrayList<AnnotationComponent>();
 
     public AnnotationComponent(ArrayList<AnnotationComponent> set)
     {
@@ -37,10 +35,22 @@ public class AnnotationComponent {
                     set.get(i).updateLocation();
                 } else if (set.get(i).prev != null)
                     set.get(i).setHeight(set.get(i).prev.bounds.y + set.get(i).prev.bounds.height + gapSize);
+                if(i < set.size()) {
+                    backupSet.add(set.get(i));
+                    set.remove(set.get(i));
+                }
             }
         }
         if(prev != null)
             setHeight(this.prev.bounds.y + this.prev.bounds.height + gapSize);
+        if(set != null) {
+            if (set.isEmpty()) {
+                for (int i = 0; i < backupSet.size(); i++) {
+                    set.add(backupSet.get(i));
+                    backupSet.remove(backupSet.get(i));
+                }
+            }
+        }
     }
 
     private void setHeight(int newHeight)
