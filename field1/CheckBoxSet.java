@@ -1,4 +1,7 @@
-/*package field1;
+package field1;
+
+import buttons.AddButton;
+import buttons.RemoveButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,76 +9,46 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
-public class CheckBoxSet extends AnnotationField1 {
-    protected LinkedList<JCheckBox> checkboxes;
-    protected String key;
-    protected LinkedList<String> value;
-    protected int size;
-    protected String[] options;
-    String toString;
+public class CheckBoxSet extends FieldList {
+    protected LinkedList<CheckBox> list;
 
-    public CheckBoxSet(String key, AnnotationField1 prev, AnnotationField1 next, Rectangle bounds, int size, String[] options)
+    public CheckBoxSet(String[] names, String key, Rectangle bounds, JPanel panel,
+                         HashMap<String, ArrayList<String>> map, AnnotationComponent prev,
+                         AnnotationComponent next, ArrayList<AnnotationComponent> set)
     {
-        super(key, prev, next, bounds);
-        this.size = size;
-        this.options = options;
-        int gapSize = 30;
-        for(int i = 0; i < size; i++)
-            checkboxes.add(createCheckbox(this.bounds,i,options[i],gapSize));
+        super(key, bounds, false, false, Integer.MAX_VALUE, 0, panel, map, null, prev, next, set);
+        this.set = set;
+        set.add(this);
+        this.list = new LinkedList<CheckBox>();
+        Rectangle currBounds = bounds;
+        for(int i = 0; i < names.length; i++) {
+            if(i>0)
+                currBounds.x += (bounds.width+10);
+            list.add(new CheckBox(key, names[i], currBounds, prev, next, panel, map, set));
+        }
     }
 
-    public CheckBoxSet(String key, Rectangle bounds, int size, String[] options)
-    {
-        super(key, null,null,bounds);
-        this.size = size;
-        this.options = options;
-        int gapSize = 30;
-        for(int i = 0; i < size; i++)
-            checkboxes.add(createCheckbox(this.bounds,i,options[i],gapSize));
+    public void updateLocation() {
+        super.updateLocation();
+        if(list != null && list.size() > 0)
+        {
+            for(int i = 0; i < list.size(); i++)
+                list.get(i).updateLocation();
+        }
     }
 
-    public JCheckBox createCheckbox(Rectangle checkboxBounds, int i, String option, int gapSize)
-    {
-        JCheckBox result = new JCheckBox(option);
-        if(i>1)
-            checkboxBounds.x = checkboxes.get(i-1).getBounds().width + checkboxes.get(i-1).getBounds().width + gapSize;
-        result.setBounds(checkboxBounds);
-        result.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        updateValue();
-                    }
-                }
-        );
-        result.setVisible(true);
-        panel.add(result);
+    public LinkedList<CheckBox> getList() { return list; };
+
+    public ArrayList<String> getValueStrings(){
+        ArrayList<String> result = new ArrayList<String>();
+        for(int i = 0; i < size; i++)
+        {
+            if(list.get(i).getValueStrings() != null && list.get(i).getValueStrings().size()>0 && !list.get(i).getValueStrings().get(0).equals("")) {
+                result.add((String) list.get(i).getValueStrings().get(0));
+            }
+        }
+        map.put(key, result);
         return result;
     }
 
-    public void updateValue()
-    {
-        for(int i = 0; i < size; i++)
-        {
-            if(checkboxes.get(i).isSelected())
-            {
-                value.add(checkboxes.get(i).getName());
-                toString += checkboxes.get(i).getName() + "*";
-            }
-        }
-        if(toString.length() > 0)
-            toString = toString.substring(0,toString.length()-1);
-    }
-
-    public String toString()
-    {
-        return toString;
-    }
-
-    public LinkedList<String> getValue()
-    {
-        return value;
-    }
-
-
-} */
+}

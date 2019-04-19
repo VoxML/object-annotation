@@ -1,5 +1,7 @@
 package field1;
 
+import field.AnnotationField;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
@@ -9,8 +11,9 @@ public class AnnotationField1<T> extends AnnotationComponent {
     protected ArrayList<String> valueStrings = new ArrayList<String>();
     protected HashMap<String, ArrayList<String>> map;
 
-    public AnnotationField1()
+    public AnnotationField1(ArrayList<AnnotationComponent> set)
     {
+        super(set);
         this.key = null;
         this.bounds = null;
         this.prev = null;
@@ -20,8 +23,11 @@ public class AnnotationField1<T> extends AnnotationComponent {
         updateLocation();
     }
 
-    public AnnotationField1(String key, Rectangle bounds)
+    public AnnotationField1(ArrayList<AnnotationComponent> set, String key, Rectangle bounds)
     {
+        super(set);
+        this.set = set;
+        set.add(this);
         this.key = key;
         this.bounds = bounds;
         if(prev != null)
@@ -29,6 +35,18 @@ public class AnnotationField1<T> extends AnnotationComponent {
         if(next != null)
             this.next.prev = this;
         updateLocation();
+    }
+
+    public void updateLocation()
+    {
+        super.updateLocation();
+        if(map != null) {
+            if (map.containsKey("Intrinsic"))
+                map.put("Intr", map.get("Intrinsic"));
+            if (map.containsKey("Extrinsic"))
+                map.put("Extr", map.get("Extrinsic"));
+            map.put("Habitat", null);
+        }
     }
 
     public String getKey()

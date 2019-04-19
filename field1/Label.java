@@ -6,13 +6,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Label extends AnnotationComponent {
     protected JLabel label;
     protected String name;
 
-    public Label(String name, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next, JPanel panel)
+    public Label(ArrayList<AnnotationComponent> set, String name, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next, JPanel panel)
     {
+        super(set);
+        set.add(this);
+        this.set = set;
         this.name = name;
         this.bounds = bounds;
         this.panel = panel;
@@ -25,8 +29,11 @@ public class Label extends AnnotationComponent {
         createLabel(bounds, name);
     }
 
-    public Label(String name, Rectangle bounds, JPanel panel)
+    public Label(ArrayList<AnnotationComponent> set, String name, Rectangle bounds, JPanel panel)
     {
+        super(set);
+        this.set = set;
+        set.add(this);
         this.name = name;
         this.bounds = bounds;
         this.panel = panel;
@@ -35,9 +42,11 @@ public class Label extends AnnotationComponent {
 
     public void updateLocation()
     {
+        System.out.println("CURRENT LOCATION FOR LABEL " + name + ": " + label.getBounds().y);
         super.updateLocation();
         if(bounds!=null)
             label.setBounds(bounds);
+        System.out.println("NEW LOCATION FOR LABEL " + name + ": " + label.getBounds().y);
     }
 
     public JLabel createLabel(Rectangle labelBounds, String name)
@@ -52,4 +61,5 @@ public class Label extends AnnotationComponent {
     }
 
     public Rectangle getBounds() {return bounds;}
+    public String getName() {return name;}
 }

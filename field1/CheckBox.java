@@ -2,18 +2,20 @@ package field1;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public class DropDown extends AnnotationField1 {
-    protected JComboBox dropdown;
-    protected String[] options;
+public class CheckBox extends AnnotationField1 {
+    String name;
+    protected JCheckBox checkbox;
 
-    public DropDown(String key, String[] options, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
+    public CheckBox(String key, String name, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
                     JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
     {
         super(set);
-        System.out.println("BOUNDS HEIGHT " + bounds.height);
+        this.name = name;
         this.set = set;
         set.add(this);
         this.key = key;
@@ -22,26 +24,23 @@ public class DropDown extends AnnotationField1 {
         this.map = map;
         this.prev = prev;
         this.next = next;
-        this.options = options;
-        System.out.println("OPTIONS: " + options);
         if(prev != null)
             this.prev.next = this;
         if(next != null)
             this.next.prev = this;
-        createDropdown(bounds, options);
+        createCheckBox(name, bounds);
     }
 
-    public DropDown(String key, String[] options, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
+    public CheckBox(String key, String name, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
     {
         super(set);
-        System.out.println("BOUNDS HEIGHT " + bounds.height);
         this.set = set;
         set.add(this);
         this.key = key;
         this.bounds = bounds;
         this.panel = panel;
         this.map = map;
-        createDropdown(bounds, options);
+        createCheckBox(name, bounds);
     }
 
 
@@ -49,19 +48,22 @@ public class DropDown extends AnnotationField1 {
     {
         super.updateLocation();
         if(bounds!=null)
-            dropdown.setBounds(bounds);
+            checkbox.setBounds(bounds);
     }
 
-    public JComboBox createDropdown(Rectangle dropdownBounds, String[] dropdownOptions)
+    public JCheckBox createCheckBox(String name, Rectangle checkboxBounds)
     {
-        System.out.println(dropdownOptions == null);
-        JComboBox<String> result = new JComboBox<String>(dropdownOptions);
-        result.setBounds(dropdownBounds);
+        JCheckBox result = new JCheckBox(name);
+        result.setBounds(checkboxBounds);
         result.addActionListener(
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        String value = (String) result.getSelectedItem();
+                        String value;
+                        if(result.isSelected())
+                            value = "true";
+                        else
+                            value = "false";
                         valueStrings.clear();
                         valueStrings.add(value);
                         map.put(key, valueStrings);
@@ -70,9 +72,10 @@ public class DropDown extends AnnotationField1 {
         );
         result.setVisible(true);
         panel.add(result);
-        dropdown = result;
+        checkbox = result;
         updateLocation();
-        System.out.println("I CREATED A DROPDOWN at height " + bounds.height);
-        return dropdown;
+        return result;
     }
+
+
 }

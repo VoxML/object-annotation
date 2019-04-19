@@ -6,16 +6,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Button extends AnnotationComponent {
     public String name;
     public JButton button;
+    public ActionListener AL;
 
-    public Button()
-    {}
+    public Button(ArrayList<AnnotationComponent> set)
+    {super(set);}
 
-    public Button(String name, AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, JPanel panel, ActionListener AL)
+    public Button(String name, AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, JPanel panel, ActionListener AL, ArrayList<AnnotationComponent> set)
     {
+        super(set);
+        this.set = set;
+        if(set != null)
+            set.add(this);
         this.name = name;
         this.prev = prev;
         this.next = next;
@@ -29,8 +36,11 @@ public class Button extends AnnotationComponent {
         updateLocation();
     }
 
-    public Button(String name, Rectangle bounds, JPanel panel, ActionListener AL)
+    public Button(String name, Rectangle bounds, JPanel panel, ActionListener AL, ArrayList<AnnotationComponent> set)
     {
+        super(set);
+        this.set = set;
+        set.add(this);
         this.name = name;
         this.prev = null;
         this.next = null;
@@ -42,12 +52,13 @@ public class Button extends AnnotationComponent {
     public void updateLocation()
     {
         super.updateLocation();
-        if(bounds!=null)
+        if(button != null && bounds!=null)
             button.setBounds(bounds);
     }
 
     protected JButton createButton(String name, Rectangle buttonBounds, ActionListener AL) {
         button = new JButton(name);
+        this.AL = AL;
         button.addActionListener(AL);
         button.setBounds(buttonBounds);
         button.setVisible(true);

@@ -6,14 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class TextField extends AnnotationField1<String> {
-    protected JTextField textfield;
+    public JTextField textfield;
     protected String key;
 
     public TextField(String key, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
-                    JPanel panel, HashMap<String, ArrayList<String>> map)
+                    JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
     {
+        super(set);
+        this.set = set;
+        set.add(this);
         this.key = key;
         this.bounds = bounds;
         this.panel = panel;
@@ -27,8 +31,11 @@ public class TextField extends AnnotationField1<String> {
         createTextField(bounds);
     }
 
-    public TextField(String key, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map)
+    public TextField(String key, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
     {
+        super(set);
+        this.set = set;
+        set.add(this);
         this.key = key;
         this.bounds = bounds;
         this.panel = panel;
@@ -57,6 +64,11 @@ public class TextField extends AnnotationField1<String> {
                         valueStrings.add(value);
                         map.put(key, valueStrings);
                         System.out.println(map);
+
+                        if(map.containsKey("Intrinsic"))
+                            map.put("Intr",map.get("Intrinsic"));
+                        if(map.containsKey("Extrinsic"))
+                            map.put("Extr",map.get("Extrinsic"));
                     }
                 }
         );
