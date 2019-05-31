@@ -1,4 +1,4 @@
-package field1;
+package field;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,28 +6,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
-public class TextField extends AnnotationField1<String> {
+public class TextField extends AnnotationField<String> {
     public JTextField textfield;
-    protected String key;
+    public String key;
 
     public TextField(String key, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
                     JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
     {
         super(set);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.key = key;
         this.bounds = bounds;
         this.panel = panel;
         this.map = map;
         this.prev = prev;
-        this.next = next;
-        if(prev != null)
-            this.prev.next = this;
-        if(next != null)
-            this.next.prev = this;
         createTextField(bounds);
     }
 
@@ -35,7 +30,8 @@ public class TextField extends AnnotationField1<String> {
     {
         super(set);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.key = key;
         this.bounds = bounds;
         this.panel = panel;
@@ -47,7 +43,14 @@ public class TextField extends AnnotationField1<String> {
     public void updateLocation()
     {
         super.updateLocation();
-        if(bounds!=null)
+        if(textfield != null && bounds!=null)
+            textfield.setBounds(bounds);
+    }
+
+    protected void setHeight(int newHeight)
+    {
+        super.setHeight(newHeight);
+        if(textfield != null && bounds!=null)
             textfield.setBounds(bounds);
     }
 
@@ -63,8 +66,6 @@ public class TextField extends AnnotationField1<String> {
                         valueStrings.clear();
                         valueStrings.add(value);
                         map.put(key, valueStrings);
-                        System.out.println(map);
-
                         if(map.containsKey("Intrinsic"))
                             map.put("Intr",map.get("Intrinsic"));
                         if(map.containsKey("Extrinsic"))
@@ -77,6 +78,11 @@ public class TextField extends AnnotationField1<String> {
         textfield = result;
         updateLocation();
         return textfield;
+    }
+
+    public String toString()
+    {
+        return "Text field with key " + key;
     }
 
 }

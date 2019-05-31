@@ -1,16 +1,18 @@
-package field1;
+package lists;
 
 import buttons.AddButton;
 import buttons.RemoveButton;
+import field.AnnotationComponent;
+import field.AnnotationField;
+import field.TextField;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 
-public class FieldList<E extends AnnotationField1> extends AnnotationField1
+public class FieldList<E extends AnnotationField> extends AnnotationField
 {
-    protected LinkedList<E> list;
+    public LinkedList<E> list;
     public LinkedList<RemoveButton> remove;
     public AddButton add;
     protected LinkedList<TextField> indices;
@@ -20,14 +22,15 @@ public class FieldList<E extends AnnotationField1> extends AnnotationField1
     protected boolean indexBool;
     protected int max;
     protected int min;
-    protected int size = 0;
+    protected int size;
 
     public FieldList(String key, Rectangle bounds, boolean removeBool, boolean indexBool, int max, int min, JPanel panel,
-                      HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev, AnnotationComponent next, ArrayList<AnnotationComponent> set)
+                     HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev, AnnotationComponent next, ArrayList<AnnotationComponent> set)
     {
         super(set,key,bounds);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.list = new LinkedList<E>();
         this.bounds = bounds;
         this.removeBool = removeBool;
@@ -46,13 +49,11 @@ public class FieldList<E extends AnnotationField1> extends AnnotationField1
         if(add != null)
             add.setList(this);
         this.add = add;
-        this.removeBool = removeBool;
-        this.indexBool = indexBool;
         updateLocation();
     }
     public void updateLocation() {
         super.updateLocation();
-        if(list != null) {
+        if(list != null && list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 list.get(i).updateLocation();
             }
@@ -66,4 +67,15 @@ public class FieldList<E extends AnnotationField1> extends AnnotationField1
         System.out.println("remove method: To be implemented in subclasses.");
     }
     public int getSize() {return size; }
+
+    public LinkedList<E> getList()
+    {
+        return list;
+        //to be implemented in subclasses
+    }
+
+    public ArrayList<String> getValueStrings()
+    {
+        return valueStrings;
+    }
 }

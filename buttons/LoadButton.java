@@ -1,13 +1,11 @@
 package buttons;
 
-import field1.AnnotationComponent;
-import field1.FieldList;
+import field.AnnotationComponent;
+import lists.FieldList;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -64,6 +61,8 @@ public class LoadButton extends Button {
         this.map = map;
         this.componentSet = set;
         button = createButton(bounds);
+        for(int i = 0; i < this.button.getActionListeners().length; i++)
+            this.button.removeActionListener(this.button.getActionListeners()[i]);
         this.button.addActionListener(AL);
     }
 
@@ -85,9 +84,8 @@ public class LoadButton extends Button {
                 }
             }
         };
-        this.map = map;
-        this.componentSet = set;
-        button = createButton(bounds);
+        for(int i = 0; i < this.button.getActionListeners().length; i++)
+            this.button.removeActionListener(this.button.getActionListeners()[i]);
         this.button.addActionListener(AL);
     }
 
@@ -143,6 +141,7 @@ public class LoadButton extends Button {
     }
 
     public void load() {
+
         /*
         while(n1 < n1_goal)
         {

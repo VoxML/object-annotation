@@ -1,14 +1,14 @@
-import field.*;
 import buttons.*;
-import field1.AnnotationComponent;
-import field1.TextField;
-import view.*;
+import field.AnnotationComponent;
+import field.TextField;
+import lists.ComponentsList;
+import lists.DropDownList;
+import lists.TextFieldList;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.util.*;
 
 public class Main extends JFrame {
@@ -23,7 +23,9 @@ public class Main extends JFrame {
     static String[] possibleEventTypes = {"","state","process","transition assignment","test"};
 
     static HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
-    static ArrayList<AnnotationComponent> set = new ArrayList<AnnotationComponent>(); //to update location when things shift
+    static ArrayList<AnnotationComponent> set1 = new ArrayList<AnnotationComponent>(); //to update location when things shift for object view
+    static ArrayList<AnnotationComponent> set2 = new ArrayList<AnnotationComponent>(); //to update location when things shift for event view
+
 
     public Main() {
         init();
@@ -34,122 +36,168 @@ public class Main extends JFrame {
 
     private void init() {
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Object Annotation", null, createObjectView());
-        tabs.setMnemonicAt(0, KeyEvent.VK_O);
-        tabs.addTab("Event Annotation", null, createEventView());
-        tabs.setMnemonicAt(1, KeyEvent.VK_E);
+        JScrollPane objectScrollPane = (JScrollPane)createObjectView();
+        tabs.add(objectScrollPane, "Object");
+        JScrollPane eventScrollPane = new JScrollPane(createEventView(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tabs.add(eventScrollPane, "Event");
         add(tabs);
     }
 
     private JComponent createObjectView() {
         JComponent objectPanel = new JPanel();
-        objectPanel.setLayout(null);
+        objectPanel.setLayout(new GroupLayout(objectPanel));
 
-        field1.Label NameLabel = new field1.Label(set,"Name: ", new Rectangle(15, 20, 85, 25),
+        JScrollPane objectScrollPane = new JScrollPane(objectPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollBar bar = objectScrollPane.getVerticalScrollBar();
+
+        field.Label NameLabel = new field.Label(set1,"Name: ", new Rectangle(15, 20, 85, 25),
                 null, null, (JPanel) objectPanel);
-        field1.TextField Name = new field1.TextField("Pred", new Rectangle(110, 20, 120, 25),
-                null, null, (JPanel) objectPanel, map, set);
+        field.TextField Name = new field.TextField("Pred", new Rectangle(110, 20, 120, 25),
+                null, null, (JPanel) objectPanel, map, set1);
         addNameFunctionality(Name);
-        field1.Label HeadLabel = new field1.Label(set,"Head: ", new Rectangle(15, 20, 85, 25),
+        field.Label HeadLabel = new field.Label(set1,"Head: ", new Rectangle(15, 20, 85, 25),
                 NameLabel, null, (JPanel) objectPanel);
-        field1.DropDown Head = new field1.DropDown("Head", possibleHeads, new Rectangle(110,20,120,
-                25), Name, null, (JPanel)objectPanel, map, set);
-        field1.Label TypeLabel = new field1.Label(set, "Type: ", new Rectangle(15, 20, 85, 25),
+        field.DropDown Head = new field.DropDown("Head", possibleHeads, new Rectangle(110,20,120,
+                25), Name, null, (JPanel)objectPanel, map, set1);
+        field.Label TypeLabel = new field.Label(set1, "Type: ", new Rectangle(15, 20, 85, 25),
                 HeadLabel, null, (JPanel) objectPanel);
-        field1.DropDownList Types = new field1.DropDownList("Type", new Rectangle(110,20,100,25),true,false,
-                3,0,(JPanel)objectPanel,map,null,possibleTypes,Head,null, set);
-        AddButton addType = new AddButton(Head, null, new Rectangle(350,20,100,25),Types,(JPanel)objectPanel,set);
-        field1.Label ComponentsLabel = new field1.Label(set,"Components: ", new Rectangle(15, 20, 100, 25),
+        DropDownList Types = new DropDownList("Type", new Rectangle(110,20,100,25),true,false,
+                3,0,(JPanel)objectPanel,map,null,possibleTypes,Head,null, set1);
+        AddButton addType = new AddButton(Head, null, new Rectangle(350,20,100,25),Types,(JPanel)objectPanel,set1);
+        field.Label ComponentsLabel = new field.Label(set1,"Components: ", new Rectangle(15, 20, 100, 25),
                 Types,null,(JPanel)objectPanel);
-        field1.ComponentsList Components = new field1.ComponentsList("Components", new Rectangle(50, 20, 100, 25), true, true,
-                (JPanel)objectPanel,map,null,ComponentsLabel,null,set);
-        AddButton addComponent = new AddButton(Types,null,new Rectangle(350,20,100,25),Components,(JPanel)objectPanel,set);
+        ComponentsList Components = new ComponentsList("Components", new Rectangle(50, 20, 100, 25), true, true,
+                (JPanel)objectPanel,map,null,ComponentsLabel,null,set1);
+        AddButton addComponent = new AddButton(Types,null,new Rectangle(350,20,100,25),Components,(JPanel)objectPanel,set1);
         Components.getConcavityStrings();
-        field1.Label RotSymLabel = new field1.Label(set,"Rotational symmetry: ", new Rectangle(15, 20, 200, 25),
+        field.Label RotSymLabel = new field.Label(set1,"Rotational symmetry: ", new Rectangle(15, 20, 200, 25),
                 Components,null,(JPanel)objectPanel);
-        field1.CheckBoxSet rotationalSymmetry = new field1.CheckBoxSet(possibleRotSym, "RotatSym", new Rectangle(15, 20, 70, 25),
-                (JPanel)objectPanel, map, RotSymLabel,null,set);
-        field1.Label ReflSymLabel = new field1.Label(set,"Reflection symmetry: ", new Rectangle(15, 20, 200, 25),
-                rotationalSymmetry,null,(JPanel)objectPanel);
-        field1.CheckBoxSet reflectionSymmetry = new field1.CheckBoxSet(possibleReflSym, "ReflSym", new Rectangle(15, 20, 70, 25),
-                (JPanel)objectPanel, map, ReflSymLabel,null,set);
-        field1.Label HabitatsLabel = new field1.Label(set,"Habitats: ", new Rectangle(15, 20, 100, 25),
-                reflectionSymmetry,null,(JPanel)objectPanel);
-        field1.Label IntrinsicNameLabel = new field1.Label(set,"name: ", new Rectangle(110, 20, 100, 25),
+        field.CheckBox rotationalSymmetryX = new field.CheckBox("RotatSym[0]","X",new Rectangle(30,20,35,25),RotSymLabel,
+                null,(JPanel)objectPanel,map,set1);
+        field.CheckBox rotationalSymmetryY = new field.CheckBox("RotatSym[1]","Y",new Rectangle(100,20,35,25),RotSymLabel,
+                null,(JPanel)objectPanel,map,set1);
+        field.CheckBox rotationalSymmetryZ = new field.CheckBox("RotatSym[2]","Z",new Rectangle(170,20,35,25),RotSymLabel,
+                null,(JPanel)objectPanel,map,set1);
+        field.Label ReflSymLabel = new field.Label(set1,"Reflection symmetry: ", new Rectangle(15, 20, 200, 25),
+                rotationalSymmetryX,null,(JPanel)objectPanel);
+        field.CheckBox reflectionSymmetryXY = new field.CheckBox("ReflSym[0]","XY",new Rectangle(30,20,45,25),ReflSymLabel,
+                null,(JPanel)objectPanel,map,set1);
+        field.CheckBox reflectionSymmetryYZ = new field.CheckBox("ReflSym[1]","YZ",new Rectangle(110,20,45,25),ReflSymLabel,
+                null,(JPanel)objectPanel,map,set1);
+        field.CheckBox reflectionSymmetryZX = new field.CheckBox("ReflSym[2]","ZX",new Rectangle(190,20,45,25),ReflSymLabel,
+                null,(JPanel)objectPanel,map,set1);
+        field.Label HabitatsLabel = new field.Label(set1,"Habitats: ", new Rectangle(15, 20, 100, 25),
+                reflectionSymmetryXY,null,(JPanel)objectPanel);
+        field.Label IntrinsicNameLabel = new field.Label(set1,"name: ", new Rectangle(110, 20, 100, 25),
                 HabitatsLabel,null,(JPanel)objectPanel);
-        field1.Label IntrinsicValueLavel = new field1.Label(set,"value: ", new Rectangle(195, 20, 100, 25),
+        field.Label IntrinsicValueLavel = new field.Label(set1,"value: ", new Rectangle(195, 20, 100, 25),
                 HabitatsLabel,null,(JPanel)objectPanel);
-        field1.Label IntrinsicLabel = new field1.Label(set,"Intrinsic: ", new Rectangle(30, 20, 100, 25),
+        field.Label IntrinsicLabel = new field.Label(set1,"Intrinsic: ", new Rectangle(30, 20, 100, 25),
                 HabitatsLabel,null,(JPanel)objectPanel);
-        field1.TextFieldList Intrinsic = new field1.TextFieldList("Intrinsic", new Rectangle(110,20,80,25),true,true,
-                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,IntrinsicLabel,null,set);
-        AddButton addIntrinsic = new AddButton(HabitatsLabel,null,new Rectangle(350,20,100,25),Intrinsic,(JPanel)objectPanel,set);
-        field1.Label ExtrinsicNameLabel = new field1.Label(set,"name: ", new Rectangle(110, 20, 100, 25),
+        TextFieldList Intrinsic = new TextFieldList("Intrinsic", new Rectangle(110,20,80,25),true,true,
+                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,IntrinsicLabel,null,set1);
+        AddButton addIntrinsic = new AddButton(HabitatsLabel,null,new Rectangle(350,20,100,25),Intrinsic,(JPanel)objectPanel,set1);
+        field.Label ExtrinsicNameLabel = new field.Label(set1,"name: ", new Rectangle(110, 20, 100, 25),
                 Intrinsic,null,(JPanel)objectPanel);
-        field1.Label ExtrinsicValueLabel = new field1.Label(set,"value: ", new Rectangle(195, 20, 100, 25),
+        field.Label ExtrinsicValueLabel = new field.Label(set1,"value: ", new Rectangle(195, 20, 100, 25),
                 Intrinsic,null,(JPanel)objectPanel);
-        field1.Label ExtrinsicLabel = new field1.Label(set,"Extrinsic: ", new Rectangle(30, 20, 100, 25),
+        field.Label ExtrinsicLabel = new field.Label(set1,"Extrinsic: ", new Rectangle(30, 20, 100, 25),
                 Intrinsic,null,(JPanel)objectPanel);
-        field1.TextFieldList Extrinsic = new field1.TextFieldList("Extrinsic", new Rectangle(110,20,80,25),true,true,
-                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,ExtrinsicLabel,null,set);
-        AddButton addExtrinsic = new AddButton(Intrinsic,null,new Rectangle(350,20,100,25),Extrinsic,(JPanel)objectPanel,set);
-        field1.Label AffordancesLabel = new field1.Label(set,"Affordances: ", new Rectangle(15, 20, 120, 25),
+        TextFieldList Extrinsic = new TextFieldList("Extrinsic", new Rectangle(110,20,80,25),true,true,
+                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,ExtrinsicLabel,null,set1);
+        AddButton addExtrinsic = new AddButton(Intrinsic,null,new Rectangle(350,20,100,25),Extrinsic,(JPanel)objectPanel,set1);
+        field.Label AffordancesLabel = new field.Label(set1,"Affordances: ", new Rectangle(15, 20, 120, 25),
                 Extrinsic,null,(JPanel)objectPanel);
-        field1.TextFieldList Affordances = new field1.TextFieldList("Affordances", new Rectangle(15,20,80,25),true,false,
-                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,AffordancesLabel,null,set);
-        AddButton addAffordance = new AddButton(Extrinsic,null,new Rectangle(350,20,100,25),Affordances,(JPanel)objectPanel,set);
-        field1.Label ScaleLabel = new field1.Label(set,"Scale: ", new Rectangle(15, 20, 70, 25),
+        TextFieldList Affordances = new TextFieldList("Affordances", new Rectangle(15,20,80,25),true,false,
+                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,AffordancesLabel,null,set1);
+        AddButton addAffordance = new AddButton(Extrinsic,null,new Rectangle(350,20,100,25),Affordances,(JPanel)objectPanel,set1);
+        field.Label ScaleLabel = new field.Label(set1,"Scale: ", new Rectangle(15, 20, 70, 25),
                 Affordances,null,(JPanel)objectPanel);
-        field1.DropDown Scale = new field1.DropDown("Scale",possibleScales, new Rectangle(90,20,100,25),Affordances,null,
-                (JPanel)objectPanel,map,set);
-        field1.Label MovableLabel = new field1.Label(set,"Movable? ", new Rectangle(15, 20, 70, 25),
+        field.DropDown Scale = new field.DropDown("Scale",possibleScales, new Rectangle(90,20,100,25),Affordances,null,
+                (JPanel)objectPanel,map,set1);
+        field.Label MovableLabel = new field.Label(set1,"Movable? ", new Rectangle(15, 20, 70, 25),
                 Scale,null,(JPanel)objectPanel);
-        field1.CheckBox Movable = new field1.CheckBox("Movable","",new Rectangle(90,20,50,25),Scale,null,
-                (JPanel)objectPanel,map,set);
-        LoadButton Load = new LoadButton(null,null,new Rectangle(350,20,100,25),(JPanel)objectPanel,map,set);
-        SaveButton Save = new SaveButton(null,null,new Rectangle(460,20,100,25),(JPanel)objectPanel,map,set);
+        field.CheckBox Movable = new field.CheckBox("Movable","",new Rectangle(90,20,50,25),Scale,null,
+                (JPanel)objectPanel,map,set1);
+        LoadButton Load = new LoadButton(null,null,new Rectangle(350,20,100,25),(JPanel)objectPanel,map,set1);
+        SaveButton Save = new SaveButton(null,null,new Rectangle(460,20,100,25),(JPanel)objectPanel,map,set1);
 
         map.put("Intr",map.get("Intrinsic"));
         map.put("Extr",map.get("Extrinsic"));
         map.put("Habitat",null);
 
-        return objectPanel;
+        while(bar.getAdjustmentListeners().length>0)
+            bar.removeAdjustmentListener(bar.getAdjustmentListeners()[0]);
+
+        for(AnnotationComponent comp : set1)
+        {
+            comp.setVerticalBar(bar);
+        }
+
+        objectPanel.setBackground(lightPurple);
+        objectPanel.setBounds(0,0,600, Movable.getBounds().y + Movable.getBounds().height + 20);
+        objectPanel.setPreferredSize(new Dimension(600, Movable.getBounds().y + Movable.getBounds().height + 20));
+
+        return objectScrollPane;
     }
 
     private JComponent createEventView() {
         JComponent eventPanel = new JPanel();
-        eventPanel.setLayout(null);
+        eventPanel.setLayout(new GroupLayout(eventPanel));
 
-        field1.Label NameLabel = new field1.Label(set,"Name: ", new Rectangle(15, 20, 85, 25),
+        JScrollPane objectScrollPane = new JScrollPane(eventPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollBar bar = objectScrollPane.getVerticalScrollBar();
+
+        field.Label NameLabel = new field.Label(set2,"Name: ", new Rectangle(15, 20, 85, 25),
                 null, null, (JPanel) eventPanel);
-        field1.TextField Name = new field1.TextField("Pred", new Rectangle(110, 20, 120, 25),
-                null, null, (JPanel) eventPanel, map, set);
+        field.TextField Name = new field.TextField("Pred", new Rectangle(110, 20, 120, 25),
+                null, null, (JPanel) eventPanel, map, set2);
         addNameFunctionality(Name);
-        field1.Label HeadLabel = new field1.Label(set,"Head: ", new Rectangle(15, 20, 85, 25),
+        field.Label HeadLabel = new field.Label(set2,"Head: ", new Rectangle(15, 20, 85, 25),
                 NameLabel, null, (JPanel) eventPanel);
-        field1.DropDown Head = new field1.DropDown("Head", possibleEventHeads, new Rectangle(110,20,120,
-                25), Name, null, (JPanel)eventPanel, map, set);
-        field1.Label TypeLabel = new field1.Label(set, "Type: ", new Rectangle(15, 20, 85, 25),
+        field.DropDown Head = new field.DropDown("Head", possibleEventHeads, new Rectangle(110,20,120,
+                25), Name, null, (JPanel)eventPanel, map, set2);
+        field.Label TypeLabel = new field.Label(set2, "Type: ", new Rectangle(15, 20, 85, 25),
                 HeadLabel, null, (JPanel) eventPanel);
-        field1.DropDownList Types = new field1.DropDownList("Type", new Rectangle(110,20,100,25),true,false,
-                3,0,(JPanel)eventPanel,map,null,possibleEventTypes,Head,null, set);
-        AddButton addType = new AddButton(Head, null, new Rectangle(350,20,100,25),Types,(JPanel)eventPanel,set);
-        field1.Label ArgsLabel = new field1.Label(set,"Args: ", new Rectangle(15, 20, 100, 25),
+        DropDownList Types = new DropDownList("Type", new Rectangle(110,20,100,25),true,false,
+                3,0,(JPanel)eventPanel,map,null,possibleEventTypes,Head,null, set2);
+        AddButton addType = new AddButton(Head, null, new Rectangle(350,20,100,25),Types,(JPanel)eventPanel,set2);
+        field.Label ArgsLabel = new field.Label(set2,"Args: ", new Rectangle(15, 20, 100, 25),
                 Types,null,(JPanel)eventPanel);
-        field1.TextFieldList Args = new field1.TextFieldList("Args",new Rectangle(50, 20, 100, 25),true,true,Integer.MAX_VALUE,
-            0,(JPanel)eventPanel,map,null,ArgsLabel,null,set);
-        AddButton addArg = new AddButton(Types,null,new Rectangle(350,20,100,25),Args,(JPanel)eventPanel,set);
-        field1.Label BodyLabel = new field1.Label(set,"Body: ", new Rectangle(15, 20, 100, 25),
+        TextFieldList Args = new TextFieldList("Args",new Rectangle(50, 20, 100, 25),true,true,Integer.MAX_VALUE,
+            0,(JPanel)eventPanel,map,null,ArgsLabel,null,set2);
+        AddButton addArg = new AddButton(Types,null,new Rectangle(350,20,100,25),Args,(JPanel)eventPanel,set2);
+        field.Label BodyLabel = new field.Label(set2,"Body: ", new Rectangle(15, 20, 100, 25),
                 Args,null,(JPanel)eventPanel);
-        field1.TextFieldList Body = new field1.TextFieldList("Body",new Rectangle(50, 20, 100, 25),true,true,Integer.MAX_VALUE,
-                0,(JPanel)eventPanel,map,null,BodyLabel,null,set);
-        AddButton addBody = new AddButton(Args,null,new Rectangle(350,20,100,25),Body,(JPanel)eventPanel,set);
-        field1.Label EmbeddingSpaceLabel = new field1.Label(set,"Embedding Space: ", new Rectangle(15,20,200,25),Body,
+        TextFieldList Body = new TextFieldList("Body",new Rectangle(50, 20, 100, 25),true,true,Integer.MAX_VALUE,
+                0,(JPanel)eventPanel,map,null,BodyLabel,null,set2);
+        AddButton addBody = new AddButton(Args,null,new Rectangle(350,20,100,25),Body,(JPanel)eventPanel,set2);
+        field.Label EmbeddingSpaceLabel = new field.Label(set2,"Embedding Space: ", new Rectangle(15,20,200,25),Body,
                 null,(JPanel)eventPanel);
-        field1.TextField EmbeddingSpace = new field1.TextField("embeddingSpace",new Rectangle(30,20,100,25),EmbeddingSpaceLabel,null,
-                (JPanel)eventPanel,map,set);
-        LoadButton Load = new LoadButton(null,null,new Rectangle(350,20,100,25),(JPanel)eventPanel,map,set);
-        SaveButton Save = new SaveButton(null,null,new Rectangle(460,20,100,25),(JPanel)eventPanel,map,set);
+        field.TextField EmbeddingSpace = new field.TextField("embeddingSpace",new Rectangle(30,20,100,25),EmbeddingSpaceLabel,null,
+                (JPanel)eventPanel,map,set2);
+        LoadButton Load = new LoadButton(null,null,new Rectangle(350,20,100,25),(JPanel)eventPanel,map,set2);
+        SaveButton Save = new SaveButton(null,null,new Rectangle(460,20,100,25),(JPanel)eventPanel,map,set2);
+        Load.button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("pressed load button");
+                String path = Load.getPath();
+            }
+        });
+
+        eventPanel.setBackground(lightGreen);
+        eventPanel.setBounds(0,0,600, EmbeddingSpace.getBounds().y + EmbeddingSpace.getBounds().height + 20);
+        eventPanel.setPreferredSize(new Dimension(600, EmbeddingSpace.getBounds().y + EmbeddingSpace.getBounds().height + 20));
+
+        while(bar.getAdjustmentListeners().length>0)
+            bar.removeAdjustmentListener(bar.getAdjustmentListeners()[0]);
+
+        for(AnnotationComponent comp : set1)
+        {
+            comp.setVerticalBar(bar);
+        }
+
         return eventPanel;
     }
 
@@ -168,4 +216,7 @@ public class Main extends JFrame {
                 }
         );
     }
+
+    Color lightPurple = new Color(200, 150, 250);
+    Color lightGreen = new Color(150, 250, 150);
 }

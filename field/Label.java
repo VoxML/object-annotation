@@ -1,31 +1,23 @@
-package field1;
+package field;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
 public class Label extends AnnotationComponent {
-    protected JLabel label;
-    protected String name;
+    public JLabel label;
+    public String name;
 
     public Label(ArrayList<AnnotationComponent> set, String name, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next, JPanel panel)
     {
         super(set);
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.set = set;
         this.name = name;
         this.bounds = bounds;
         this.panel = panel;
         this.prev = prev;
-        this.next = next;
-        if(prev != null)
-            this.prev.next = this;
-        if(next != null)
-            this.next.prev = this;
         createLabel(bounds, name);
     }
 
@@ -33,7 +25,8 @@ public class Label extends AnnotationComponent {
     {
         super(set);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.name = name;
         this.bounds = bounds;
         this.panel = panel;
@@ -42,12 +35,18 @@ public class Label extends AnnotationComponent {
 
     public void updateLocation()
     {
-        System.out.println("CURRENT LOCATION FOR LABEL " + name + ": " + label.getBounds().y);
         super.updateLocation();
-        if(bounds!=null)
+        if(label != null && bounds!=null)
             label.setBounds(bounds);
-        System.out.println("NEW LOCATION FOR LABEL " + name + ": " + label.getBounds().y);
     }
+
+    protected void setHeight(int newHeight)
+    {
+        super.setHeight(newHeight);
+        if(label != null && bounds!=null)
+            label.setBounds(bounds);
+    }
+
 
     public JLabel createLabel(Rectangle labelBounds, String name)
     {
@@ -61,5 +60,11 @@ public class Label extends AnnotationComponent {
     }
 
     public Rectangle getBounds() {return bounds;}
+
     public String getName() {return name;}
+
+    public String toString()
+    {
+        return "Label with text " + name;
+    }
 }

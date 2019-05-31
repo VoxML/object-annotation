@@ -1,4 +1,4 @@
-package field1;
+package field;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,9 +7,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class CheckBox extends AnnotationField1 {
-    String name;
-    protected JCheckBox checkbox;
+public class CheckBox extends AnnotationField {
+    public String name;
+    public JCheckBox checkbox;
 
     public CheckBox(String key, String name, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
                     JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
@@ -17,17 +17,13 @@ public class CheckBox extends AnnotationField1 {
         super(set);
         this.name = name;
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.key = key;
         this.bounds = bounds;
         this.panel = panel;
         this.map = map;
         this.prev = prev;
-        this.next = next;
-        if(prev != null)
-            this.prev.next = this;
-        if(next != null)
-            this.next.prev = this;
         createCheckBox(name, bounds);
     }
 
@@ -35,7 +31,8 @@ public class CheckBox extends AnnotationField1 {
     {
         super(set);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.key = key;
         this.bounds = bounds;
         this.panel = panel;
@@ -43,11 +40,17 @@ public class CheckBox extends AnnotationField1 {
         createCheckBox(name, bounds);
     }
 
-
     public void updateLocation()
     {
         super.updateLocation();
-        if(bounds!=null)
+        if(checkbox != null && bounds!=null)
+            checkbox.setBounds(bounds);
+    }
+
+    protected void setHeight(int newHeight)
+    {
+        super.setHeight(newHeight);
+        if(checkbox != null && bounds!=null)
             checkbox.setBounds(bounds);
     }
 
@@ -77,5 +80,14 @@ public class CheckBox extends AnnotationField1 {
         return result;
     }
 
+    public String toString()
+    {
+        return "Checkbox with key " + key;
+    }
+
+    public ArrayList<String> getValueStrings()
+    {
+        return valueStrings;
+    }
 
 }

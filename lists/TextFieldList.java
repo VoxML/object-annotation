@@ -1,18 +1,18 @@
-package field1;
+package lists;
 
 import buttons.*;
-import org.w3c.dom.Text;
+import field.AnnotationComponent;
+import field.TextField;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 public class TextFieldList extends FieldList {
 
-    protected LinkedList<TextField> list;
+    protected LinkedList<field.TextField> list;
 
     public TextFieldList(String key, Rectangle bounds, boolean removeBool, boolean indexBool, int max, int min, JPanel panel,
                          HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev,
@@ -20,9 +20,10 @@ public class TextFieldList extends FieldList {
     {
         super(key, bounds, removeBool, indexBool, max, min, panel, map, add, prev, next, set);
         this.set = set;
-        set.add(this);
-        this.list = new LinkedList<TextField>();
-        LinkedList<TextField> indices = new LinkedList<TextField>();
+        if(set != null&& !set.contains(this))
+            set.add(this);
+        this.list = new LinkedList<field.TextField>();
+        LinkedList<field.TextField> indices = new LinkedList<field.TextField>();
         for(int i = 0; i < Math.max(1,min); i++) {
             add();
         }
@@ -34,9 +35,10 @@ public class TextFieldList extends FieldList {
     {
         super(key, bounds, removeBool, indexBool, Integer.MAX_VALUE, 0, panel, map, add, prev, next, set);
         this.set = set;
-        set.add(this);
-        this.list = new LinkedList<TextField>();
-        LinkedList<TextField> indices = new LinkedList<TextField>();
+        if(set != null && !set.contains(this))
+            set.add(this);
+        this.list = new LinkedList<field.TextField>();
+        LinkedList<field.TextField> indices = new LinkedList<field.TextField>();
         for(int i = 0; i < Math.max(1,min); i++) {
             add();
         }
@@ -56,7 +58,7 @@ public class TextFieldList extends FieldList {
             }
             if(indices != null) {
                 for (int i = 0; i < indices.size(); i++) {
-                    ((TextField) (this.indices).get(i)).updateLocation();
+                    ((field.TextField) (this.indices).get(i)).updateLocation();
                 }
             }
         }
@@ -65,32 +67,32 @@ public class TextFieldList extends FieldList {
     public void add() {
         if(size < max) {
             if (size > 0) {
-                list.add(new TextField(key + "[" + size + "]", new Rectangle(bounds.x, bounds.y + size * (bounds.height + 5),
+                list.add(new field.TextField(key + "[" + size + "]", new Rectangle(bounds.x, bounds.y + size * (bounds.height + 5),
                         bounds.width, bounds.height), list.get(size - 1), null, panel, map, set));
                 if (indexBool)
-                    indices.add(new TextField(key + "_index" + "[" + size + "]", new Rectangle(bounds.x + bounds.width + 5,
-                            bounds.y + size * (bounds.height + 5), 60, bounds.height), (AnnotationComponent) indices.get(size - 1), null, panel, map, set));
+                    indices.add(new field.TextField(key + "_index" + "[" + size + "]", new Rectangle(bounds.x + bounds.width + 5,
+                            bounds.y + size * (bounds.height + 5), 60, bounds.height), (AnnotationComponent) list.get(size - 1), null, panel, map, set));
                 if (removeBool) {
                     if (!indexBool)
-                        remove.add(new RemoveButton((AnnotationComponent)remove.get(size - 1), null, new Rectangle(bounds.x + bounds.width + 5,
+                        remove.add(new RemoveButton((AnnotationComponent)list.get(size - 1), null, new Rectangle(bounds.x + bounds.width + 5,
                                 bounds.y + size * (bounds.height + 5), 80, bounds.height), this, size, panel, set));
                     else
-                        remove.add(new RemoveButton((AnnotationComponent)remove.get(size - 1), null, new Rectangle(bounds.x + bounds.width + 60 + 10,
+                        remove.add(new RemoveButton((AnnotationComponent)list.get(size - 1), null, new Rectangle(bounds.x + bounds.width + 60 + 10,
                                 bounds.y + size * (bounds.height + 5), 80, bounds.height), this, size, panel, set));
                 }
             } else {
-                list.add(new TextField(key + "[" + size + "]", new Rectangle(bounds.x, bounds.y + size * (bounds.height + 5),
+                list.add(new field.TextField(key + "[" + size + "]", new Rectangle(bounds.x, bounds.y + size * (bounds.height + 5),
                         bounds.width, bounds.height), prev, null, panel, map, set));
                 if (indexBool)
                 {
                     if(indices==null)
-                        indices = new LinkedList<TextField>();
-                    indices.add(new TextField(key + "_index" + "[" + size + "]", new Rectangle(bounds.x + bounds.width + 5,
+                        indices = new LinkedList<field.TextField>();
+                    indices.add(new field.TextField(key + "_index" + "[" + size + "]", new Rectangle(bounds.x + bounds.width + 5,
                             bounds.y + size * (bounds.height + 5), 60, bounds.height), prev, null, panel, map, set));
                 }
                 if (removeBool) {
                     if(remove==null)
-                        remove = new LinkedList<TextField>();
+                        remove = new LinkedList<RemoveButton>();
                     if (!indexBool)
                         remove.add(new RemoveButton(prev, null, new Rectangle(bounds.x + bounds.width + 5,
                                 bounds.y + size * (bounds.height + 5), 80, bounds.height), this, size, panel, set));
@@ -100,18 +102,20 @@ public class TextFieldList extends FieldList {
                 }
             }
             size++;
+            if(list != null && list.size() > 0)
+                this.bounds = list.getLast().bounds;
             updateLocation();
-            if(removeBool)
-                ((RemoveButton)remove.get(size-1)).updateLocation();
-            if(indexBool)
-                ((TextField)indices.get(size-1)).updateLocation();
-            this.bounds = list.getLast().bounds;
+            if(removeBool && remove != null && remove.size() > 0)
+                ((RemoveButton)remove.get(0)).updateLocation();
+            if(indexBool && indices != null && indices.size() > 0)
+                ((field.TextField)indices.get(0)).updateLocation();
         }
     }
+
     public void remove(int index)
     {
         if(size > 0 && size > min) {
-            TextField field = list.get(index);
+            field.TextField field = list.get(index);
             field.textfield.setVisible(false);
             panel.remove(field.textfield);
             list.remove(index);
@@ -124,16 +128,16 @@ public class TextFieldList extends FieldList {
                 list.get(i).updateLocation();
             }
             if (indexBool) {
-                TextField indexField = (TextField) indices.get(index);
+                field.TextField indexField = (field.TextField) indices.get(index);
                 indexField.textfield.setVisible(false);
                 panel.remove(indexField.textfield);
                 indices.remove(index);
                 for (int i = 0; i < indices.size(); i++) {
                     if (i > 0)
-                        ((TextField) (indices.get(i))).setPrev((TextField) indices.get(i - 1));
+                        ((field.TextField) (indices.get(i))).setPrev((field.TextField) indices.get(i - 1));
                     else
-                        ((TextField) (indices.get(i))).setPrev(this.prev);
-                    ((TextField) indices.get(i)).updateLocation();
+                        ((field.TextField) (indices.get(i))).setPrev(this.prev);
+                    ((field.TextField) indices.get(i)).updateLocation();
                 }
             }
             if (removeBool) {
@@ -150,12 +154,15 @@ public class TextFieldList extends FieldList {
                     ((RemoveButton) remove.get(i)).updateLocation();
                 }
             }
-            this.bounds = list.getLast().bounds;
+            if(list.size()>0)
+                this.bounds = list.getLast().bounds;
+            size--;
+            updateLocation();
         }
-        size--;
-        updateLocation();
     }
-    public LinkedList<TextField> getList() { return list; };
+
+    public LinkedList<field.TextField> getList() { return list; }
+
     public void setAddButton(AddButton add) {this.add = add; }
 
     public ArrayList<String> getValueStrings(){
@@ -165,11 +172,16 @@ public class TextFieldList extends FieldList {
             if(list.get(i).getValueStrings() != null && list.get(i).getValueStrings().size()>0 && !list.get(i).getValueStrings().get(0).equals("")) {
                 String result_i = (String) list.get(i).getValueStrings().get(0);
                 if(indexBool)
-                    result_i += (String) ((TextField)(indices.get(i))).getValueStrings().get(0);
+                    result_i += "[" + (String) ((TextField)(indices.get(i))).getValueStrings().get(0) + "]";
                 result.add(result_i);
             }
         }
         map.put(key, result);
         return result;
+    }
+
+    public String toString()
+    {
+        return "Text field list " + key + " of size " + size;
     }
 }

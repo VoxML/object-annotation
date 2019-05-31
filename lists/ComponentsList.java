@@ -1,10 +1,9 @@
-package field1;
+package lists;
 
 import buttons.AddButton;
-import buttons.RemoveButton;
-import field1.AnnotationComponent;
-import field1.TextField;
-import field1.TextFieldList;
+import field.AnnotationComponent;
+import field.CheckBox;
+import field.TextField;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 public class ComponentsList extends TextFieldList {
@@ -25,7 +23,8 @@ public class ComponentsList extends TextFieldList {
     {
         super(key, bounds, removeBool, indexBool, max, min, panel, map, add, prev, next, set);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.concavity = new LinkedList<CheckBox>();
         for(int i = 0; i <= min; i++)
             add();
@@ -37,14 +36,16 @@ public class ComponentsList extends TextFieldList {
     {
         super(key, bounds, removeBool, indexBool, Integer.MAX_VALUE, 0, panel, map, add, prev, next, set);
         this.set = set;
-        set.add(this);
+        if(set != null && !set.contains(this))
+            set.add(this);
         this.concavity = new LinkedList<CheckBox>();
     }
 
     public void updateLocation() {
         super.updateLocation();
-        if(concavity != null && concavity.size() > 0)
+        if(concavity != null && concavity.size() > 0) {
             (this.concavity).get(0).updateLocation();
+        }
     }
 
     public void add() {
@@ -62,10 +63,10 @@ public class ComponentsList extends TextFieldList {
             xBound += 65;
         if (concavity.size() < max) {
             if (concavity.size() > 0) {
-                concavity.add(new CheckBox(key + "_[" + concavity.size() + "]", "concave", new Rectangle(xBound, bounds.y + concavity.size() * (bounds.height + 5),
+                concavity.add(new CheckBox(key + "_concave[" + concavity.size() + "]", "concave", new Rectangle(xBound, bounds.y + concavity.size() * (bounds.height + 5),
                         bounds.width, bounds.height), list.get(size-1).prev, null, panel, map, set));
             } else {
-                concavity.add(new CheckBox(key + "_[" + concavity.size() + "]", "concave", new Rectangle(xBound, bounds.y + concavity.size() * (bounds.height + 5),
+                concavity.add(new CheckBox(key + "_concave[" + concavity.size() + "]", "concave", new Rectangle(xBound, bounds.y + concavity.size() * (bounds.height + 5),
                         bounds.width, bounds.height), prev, null, panel, map, set));
             }
             concavity.get(concavity.size()-1).checkbox.addActionListener(new ActionListener() {
@@ -102,8 +103,8 @@ public class ComponentsList extends TextFieldList {
             if(list.get(i).getValueStrings() != null && list.get(i).getValueStrings().size()>0 && !list.get(i).getValueStrings().get(0).equals("")) {
                 String result_i = (String) list.get(i).getValueStrings().get(0);
                 if(indexBool)
-                    result_i += (String) ((TextField)(indices.get(i))).getValueStrings().get(0);
-                result.add((String) list.get(i).getValueStrings().get(0));
+                    result_i += "[" + (String) ((TextField)(indices.get(i))).getValueStrings().get(0) + "]";
+                result.add(result_i);
             }
         }
         map.put(key, result);
@@ -123,4 +124,8 @@ public class ComponentsList extends TextFieldList {
         return result;
     }
 
+    public String toString()
+    {
+        return "components list of size " + size;
+    }
 }

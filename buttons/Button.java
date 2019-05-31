@@ -1,13 +1,11 @@
 package buttons;
 
-import field1.AnnotationComponent;
+import field.AnnotationComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class Button extends AnnotationComponent {
     public String name;
@@ -17,6 +15,8 @@ public class Button extends AnnotationComponent {
     public Button(ArrayList<AnnotationComponent> set)
     {super(set);}
 
+    public Button() {    }
+
     public Button(String name, AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, JPanel panel, ActionListener AL, ArrayList<AnnotationComponent> set)
     {
         super(set);
@@ -25,13 +25,8 @@ public class Button extends AnnotationComponent {
             set.add(this);
         this.name = name;
         this.prev = prev;
-        this.next = next;
         this.bounds = bounds;
         this.panel = panel;
-        if(prev != null)
-            this.prev.setNext(this);
-        if(next != null)
-            this.next.setPrev(this);
         button = createButton(name, this.bounds, AL);
         updateLocation();
     }
@@ -40,10 +35,11 @@ public class Button extends AnnotationComponent {
     {
         super(set);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.name = name;
         this.prev = null;
-        this.next = null;
+        this.bounds = bounds;
         this.panel = panel;
         button = createButton(name, this.bounds, AL);
         updateLocation();
@@ -56,14 +52,26 @@ public class Button extends AnnotationComponent {
             button.setBounds(bounds);
     }
 
+    protected void setHeight(int newHeight)
+    {
+        super.setHeight(newHeight);
+        if(button!=null && bounds != null)
+            button.setBounds(bounds);
+    }
+
     protected JButton createButton(String name, Rectangle buttonBounds, ActionListener AL) {
         button = new JButton(name);
         this.AL = AL;
         button.addActionListener(AL);
         button.setBounds(buttonBounds);
         button.setVisible(true);
-        updateLocation();
         panel.add(button);
+        updateLocation();
         return button;
+    }
+
+    public String toString()
+    {
+        return "Button with name " + name;
     }
 }

@@ -1,20 +1,16 @@
 package buttons;
 
-import field1.AnnotationComponent;
-import field1.AnnotationField1;
-import field1.FieldList;
-
+import field.AnnotationComponent;
+import lists.FieldList;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class RemoveButton extends Button {
     protected FieldList list;
     protected int index;
-    protected AnnotationField1 toRemove;
 
     public RemoveButton(AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, FieldList list, int index, JPanel panel, ArrayList<AnnotationComponent> set)
     {
@@ -25,18 +21,10 @@ public class RemoveButton extends Button {
             }
         }, set);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.list = list;
         this.index = index;
-    }
-
-    public RemoveButton(Rectangle bounds, FieldList list, int ind, JPanel panel, ArrayList<AnnotationComponent> set)
-    {
-        super("remove", bounds, panel, null, set);
-        this.set = set;
-        set.add(this);
-        this.index = ind;
-        this.list = list;
     }
 
     public void updateLocation()
@@ -52,7 +40,7 @@ public class RemoveButton extends Button {
                 list.remove(ind);
             }
         };
-        JButton result = super.createButton("add", buttonBounds, this.AL);
+        JButton result = super.createButton("remove", buttonBounds, this.AL);
         this.button = result;
         return result;
     }
@@ -63,8 +51,6 @@ public class RemoveButton extends Button {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int ind = getIndex();
-                System.out.println("MY INDEX IS " + getIndex());
-                System.out.println("I AM CALLING REMOVE WITH INDEX" + ind);
                 list.remove(ind);
             }
         };

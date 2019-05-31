@@ -1,42 +1,36 @@
-package field1;
+package field;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
-public class DropDown extends AnnotationField1 {
-    protected JComboBox dropdown;
-    protected String[] options;
+public class DropDown extends AnnotationField {
+    public JComboBox dropdown;
+    public String[] options;
 
     public DropDown(String key, String[] options, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
                     JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
     {
         super(set);
-        System.out.println("BOUNDS HEIGHT " + bounds.height);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.key = key;
         this.bounds = bounds;
         this.panel = panel;
         this.map = map;
         this.prev = prev;
-        this.next = next;
         this.options = options;
-        System.out.println("OPTIONS: " + options);
-        if(prev != null)
-            this.prev.next = this;
-        if(next != null)
-            this.next.prev = this;
         createDropdown(bounds, options);
     }
 
     public DropDown(String key, String[] options, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
     {
         super(set);
-        System.out.println("BOUNDS HEIGHT " + bounds.height);
         this.set = set;
-        set.add(this);
+        if(!set.contains(this))
+            set.add(this);
         this.key = key;
         this.bounds = bounds;
         this.panel = panel;
@@ -48,13 +42,19 @@ public class DropDown extends AnnotationField1 {
     public void updateLocation()
     {
         super.updateLocation();
-        if(bounds!=null)
+        if(dropdown != null && bounds != null)
+            dropdown.setBounds(bounds);
+    }
+
+    protected void setHeight(int newHeight)
+    {
+        super.setHeight(newHeight);
+        if(dropdown != null && bounds != null)
             dropdown.setBounds(bounds);
     }
 
     public JComboBox createDropdown(Rectangle dropdownBounds, String[] dropdownOptions)
     {
-        System.out.println(dropdownOptions == null);
         JComboBox<String> result = new JComboBox<String>(dropdownOptions);
         result.setBounds(dropdownBounds);
         result.addActionListener(
@@ -72,7 +72,11 @@ public class DropDown extends AnnotationField1 {
         panel.add(result);
         dropdown = result;
         updateLocation();
-        System.out.println("I CREATED A DROPDOWN at height " + bounds.height);
         return dropdown;
+    }
+
+    public String toString()
+    {
+        return "Dropdown with key " + key;
     }
 }
