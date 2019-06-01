@@ -25,7 +25,8 @@ public class FieldList<E extends AnnotationField> extends AnnotationField
     protected int size;
 
     public FieldList(String key, Rectangle bounds, boolean removeBool, boolean indexBool, int max, int min, JPanel panel,
-                     HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev, AnnotationComponent next, ArrayList<AnnotationComponent> set)
+                     HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev, AnnotationComponent next,
+                     HashSet<AnnotationComponent> set)
     {
         super(set,key,bounds);
         this.set = set;
@@ -36,11 +37,6 @@ public class FieldList<E extends AnnotationField> extends AnnotationField
         this.removeBool = removeBool;
         this.indexBool = indexBool;
         this.prev = prev;
-        this.next = next;
-        if(prev != null)
-            prev.next = this;
-        if(next != null)
-            next.prev = this;
         this.max = max;
         this.min = min;
         this.size = min;
@@ -53,11 +49,13 @@ public class FieldList<E extends AnnotationField> extends AnnotationField
     }
     public void updateLocation() {
         super.updateLocation();
-        if(list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                list.get(i).updateLocation();
-            }
+        if (list != null && list.size() > 0) {
+            list.get(0).updateLocation();
+            if (list.get(0).prev != null)
+                list.get(0).prev.updateLocation();
         }
+        if(map != null)
+            map.put(key,getValueStrings());
     }
     public void add() {
         System.out.println("add method: To be implemented in subclasses.");

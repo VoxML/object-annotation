@@ -8,7 +8,7 @@ public class AnnotationField<T> extends AnnotationComponent {
     public ArrayList<String> valueStrings = new ArrayList<String>();
     public HashMap<String, ArrayList<String>> map;
 
-    public AnnotationField(ArrayList<AnnotationComponent> set)
+    public AnnotationField(HashSet<AnnotationComponent> set)
     {
         super(set);
         this.set = set;
@@ -22,7 +22,7 @@ public class AnnotationField<T> extends AnnotationComponent {
         updateLocation();
     }
 
-    public AnnotationField(ArrayList<AnnotationComponent> set, String key, Rectangle bounds)
+    public AnnotationField(HashSet<AnnotationComponent> set, String key, Rectangle bounds)
     {
         super(set);
         this.set = set;

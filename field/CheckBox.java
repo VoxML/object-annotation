@@ -6,13 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class CheckBox extends AnnotationField {
     public String name;
     public JCheckBox checkbox;
 
     public CheckBox(String key, String name, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
-                    JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
+                    JPanel panel, HashMap<String, ArrayList<String>> map, HashSet<AnnotationComponent> set)
     {
         super(set);
         this.name = name;
@@ -25,9 +26,15 @@ public class CheckBox extends AnnotationField {
         this.map = map;
         this.prev = prev;
         createCheckBox(name, bounds);
+        if(map != null)
+        {
+            valueStrings.clear();
+            valueStrings.add("false");
+            map.put(key, valueStrings);
+        }
     }
 
-    public CheckBox(String key, String name, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
+    public CheckBox(String key, String name, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, HashSet<AnnotationComponent> set)
     {
         super(set);
         this.set = set;

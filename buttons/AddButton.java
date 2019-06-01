@@ -8,16 +8,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class AddButton extends Button{
 
     protected FieldList list;
 
-    public AddButton(AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, FieldList list, JPanel panel, ArrayList<AnnotationComponent> set)
+    public AddButton(AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, FieldList list, JPanel panel, HashSet<AnnotationComponent> set)
     {
         this.name = "add";
         this.prev = prev;
-        this.next = next;
         this.bounds = bounds;
         this.list = list;
         this.panel = panel;
@@ -31,7 +31,7 @@ public class AddButton extends Button{
         }
     }
 
-    public AddButton(Rectangle bounds, FieldList list, JPanel panel, ArrayList<AnnotationComponent> set)
+    public AddButton(Rectangle bounds, FieldList list, JPanel panel, HashSet<AnnotationComponent> set)
     {
         super("add", bounds, panel, new ActionListener() {
             @Override
@@ -46,6 +46,13 @@ public class AddButton extends Button{
             this.list = list;
             button = createButton(bounds);
         }
+    }
+
+    public String getKey()
+    {
+        if(list != null)
+            return list.key + "_add";
+        return "add";
     }
 
     protected JButton createButton(Rectangle buttonBounds) {

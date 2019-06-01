@@ -6,8 +6,11 @@ import field.TextField;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class TextFieldList extends FieldList {
@@ -16,7 +19,7 @@ public class TextFieldList extends FieldList {
 
     public TextFieldList(String key, Rectangle bounds, boolean removeBool, boolean indexBool, int max, int min, JPanel panel,
                          HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev,
-                         AnnotationComponent next, ArrayList<AnnotationComponent> set)
+                         AnnotationComponent next, HashSet<AnnotationComponent> set)
     {
         super(key, bounds, removeBool, indexBool, max, min, panel, map, add, prev, next, set);
         this.set = set;
@@ -31,7 +34,7 @@ public class TextFieldList extends FieldList {
 
     public TextFieldList(String key, Rectangle bounds, boolean removeBool, boolean indexBool, JPanel panel,
                         HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev,
-                         AnnotationComponent next, ArrayList<AnnotationComponent> set)
+                         AnnotationComponent next, HashSet<AnnotationComponent> set)
     {
         super(key, bounds, removeBool, indexBool, Integer.MAX_VALUE, 0, panel, map, add, prev, next, set);
         this.set = set;
@@ -46,22 +49,14 @@ public class TextFieldList extends FieldList {
 
     public void updateLocation() {
         super.updateLocation();
-        if(list != null && list.size() > 0) {
+        if (list != null && list.size() > 0) {
             this.bounds = list.getLast().textfield.getBounds();
-            for(int i = 0; i < list.size(); i++) {
-                list.get(i).updateLocation();
-            }
-            if(remove != null) {
-                for (int i = 0; i < remove.size(); i++) {
-                    ((RemoveButton) (this.remove).get(i)).updateLocation();
-                }
-            }
-            if(indices != null) {
-                for (int i = 0; i < indices.size(); i++) {
-                    ((field.TextField) (this.indices).get(i)).updateLocation();
-                }
-            }
+            list.get(0).updateLocation();
+            if (list.get(0).prev != null)
+                list.get(0).prev.updateLocation();
         }
+        if(map != null)
+            map.put(key,getValueStrings());
     }
 
     public void add() {
@@ -102,8 +97,26 @@ public class TextFieldList extends FieldList {
                 }
             }
             size++;
-            if(list != null && list.size() > 0)
+            if(list != null && list.size() > 0) {
                 this.bounds = list.getLast().bounds;
+            }
+            if(list != null && list.size() > 0) {
+                list.getLast().textfield.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        getValueStrings();
+                    }
+                });
+            }
+            if(indices != null && indices.size() > 0)
+            {
+                ((TextField)indices.getLast()).textfield.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        getValueStrings();
+                    }
+                });
+            }
             updateLocation();
             if(removeBool && remove != null && remove.size() > 0)
                 ((RemoveButton)remove.get(0)).updateLocation();
@@ -171,12 +184,13 @@ public class TextFieldList extends FieldList {
         {
             if(list.get(i).getValueStrings() != null && list.get(i).getValueStrings().size()>0 && !list.get(i).getValueStrings().get(0).equals("")) {
                 String result_i = (String) list.get(i).getValueStrings().get(0);
-                if(indexBool)
+                if(indexBool && ((TextField)(indices.get(i))).getValueStrings().size() > 0)
                     result_i += "[" + (String) ((TextField)(indices.get(i))).getValueStrings().get(0) + "]";
                 result.add(result_i);
             }
         }
-        map.put(key, result);
+        if(map != null)
+            map.put(key, result);
         return result;
     }
 

@@ -10,7 +10,7 @@ public class DropDown extends AnnotationField {
     public String[] options;
 
     public DropDown(String key, String[] options, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
-                    JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
+                    JPanel panel, HashMap<String, ArrayList<String>> map, HashSet<AnnotationComponent> set)
     {
         super(set);
         this.set = set;
@@ -22,10 +22,17 @@ public class DropDown extends AnnotationField {
         this.map = map;
         this.prev = prev;
         this.options = options;
+        if(map != null)
+        {
+            valueStrings.clear();
+            if(options.length>0)
+                valueStrings.add(options[0]);
+            map.put(key, valueStrings);
+        }
         createDropdown(bounds, options);
     }
 
-    public DropDown(String key, String[] options, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, ArrayList<AnnotationComponent> set)
+    public DropDown(String key, String[] options, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, HashSet<AnnotationComponent> set)
     {
         super(set);
         this.set = set;

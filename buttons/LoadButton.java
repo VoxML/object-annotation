@@ -1,11 +1,19 @@
 package buttons;
 
+import Main.Main;
 import field.AnnotationComponent;
+import field.AnnotationField;
+import field.DropDown;
+import field.TextField;
+import lists.DropDownList;
 import lists.FieldList;
+import lists.TextFieldList;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -13,80 +21,64 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class LoadButton extends Button {
 
-    protected HashMap<String,ArrayList<String>> map;
-    protected ArrayList<AnnotationComponent> componentSet;
-    protected String path;
-    private String readName, readHead, readHeadIndex, readRotSym, readReflSym, readScale, readMovable, readEmbeddingSpace;
-    private HashMap<String, ArrayList<String>> readMap = initiateReadMap();
-    private ArrayList<String> readTypes = new ArrayList<String>();
-    private ArrayList<String> readComps = new ArrayList<String>();
-    private ArrayList<String> readCompInds = new ArrayList<String>();
-    private ArrayList<String> readConcavity = new ArrayList<String>();
-    private ArrayList<String> readIntrinsicNames = new ArrayList<String>();
-    private ArrayList<String> readIntrinsicValues = new ArrayList<String>();
-    private ArrayList<String> readExtrinsicNames = new ArrayList<String>();
-    private ArrayList<String> readExtrinsicValues = new ArrayList<String>();
-    private ArrayList<String> readAffordances = new ArrayList<String>();
-    private ArrayList<String> readArgs = new ArrayList<String>();
-    private ArrayList<String> readArgInds = new ArrayList<String>();
-    private ArrayList<String> readBody = new ArrayList<String>();
-    private ArrayList<String> readBodyInds = new ArrayList<String>();
+    private HashMap<String,ArrayList<String>> map;
+    private HashSet<AnnotationComponent> componentSet;
+    private String path;
+    private String entityType;
+    private Main Main;
+    private JTabbedPane tabs;
 
     public LoadButton(AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, JPanel panel,
-                      HashMap<String,ArrayList<String>> map, ArrayList<AnnotationComponent> set)
+                      HashMap<String,ArrayList<String>> map, HashSet<AnnotationComponent> set,
+                      String entityType, Main Main, JTabbedPane tabs)
     {
         super("load", prev, next, bounds, panel, null, null);
         this.AL = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 path = getPath();
-                try {
-                    read();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (SAXException e1) {
-                    e1.printStackTrace();
-                } catch (ParserConfigurationException e1) {
-                    e1.printStackTrace();
-                }
+                reset();
+                read();
             }
         };
         this.map = map;
         this.componentSet = set;
-        button = createButton(bounds);
         for(int i = 0; i < this.button.getActionListeners().length; i++)
             this.button.removeActionListener(this.button.getActionListeners()[i]);
         this.button.addActionListener(AL);
+        this.entityType = entityType;
+        this.Main = Main;
+        this.tabs = tabs;
     }
 
-    public LoadButton(Rectangle bounds, FieldList list, JPanel panel, HashMap<String,ArrayList<String>> map, ArrayList<AnnotationComponent> set)
+    public LoadButton(Rectangle bounds, FieldList list, JPanel panel, HashMap<String,ArrayList<String>> map, ArrayList<AnnotationComponent> set,
+                      String entityType, Main Main, JTabbedPane tabs)
     {
         super("load", bounds, panel, null, null);
         this.AL = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 path = getPath();
-                try {
-                    read();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (SAXException e1) {
-                    e1.printStackTrace();
-                } catch (ParserConfigurationException e1) {
-                    e1.printStackTrace();
-                }
+                reset();
+                read();
             }
         };
         for(int i = 0; i < this.button.getActionListeners().length; i++)
             this.button.removeActionListener(this.button.getActionListeners()[i]);
         this.button.addActionListener(AL);
+        this.entityType = entityType;
+        this.Main = Main;
+        this.tabs = tabs;
     }
 
     protected JButton createButton(Rectangle buttonBounds) {
@@ -94,15 +86,8 @@ public class LoadButton extends Button {
             @Override
             public void actionPerformed(ActionEvent e) {
                 path = getPath();
-                try {
-                    read();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (SAXException e1) {
-                    e1.printStackTrace();
-                } catch (ParserConfigurationException e1) {
-                    e1.printStackTrace();
-                }
+                reset();
+                read();
             }
         };
         button = super.createButton("load", buttonBounds, AL);
@@ -110,99 +95,42 @@ public class LoadButton extends Button {
     }
 
     public String getPath()
+
     {
-        System.out.println("Choose a file!");
+        Component frame = new JFrame();
+        JOptionPane.showMessageDialog(frame , "Please select an XML file to load.");
         JFileChooser fileChooser = new JFileChooser();
-        // For Directory
-        // fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        // For File
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setAcceptAllFileFilterUsed(false);
         int rVal = fileChooser.showOpenDialog(null);
-        if (rVal == JFileChooser.APPROVE_OPTION) {
-            System.out.println("PATH = " + fileChooser.getSelectedFile().toString());
-        }
-        path = fileChooser.getSelectedFile().toString();
+        if (fileChooser.getSelectedFile() != null)
+            path = fileChooser.getSelectedFile().toString();
+        else
+            path = "";
         return path;
     }
 
     public void reset()
     {
-        for(AnnotationComponent ac : set)
-        {
-            if(ac instanceof FieldList && readMap.containsKey(((FieldList) ac).getKey())) {
-                while (((FieldList) ac).getSize() > readMap.get(((FieldList) ac).getKey()).size())
-                    ((RemoveButton) ((FieldList) ac).remove.get(((FieldList) ac).remove.size() - 1)).button.doClick();
-                while (((FieldList) ac).getSize() < readMap.get(((FieldList) ac).getKey()).size()) {
-                    ((AddButton) ((FieldList) ac).add).button.doClick();
-                }
-            }
+        if(entityType.equals("Object")) {
+            this.tabs.remove(0);
+            JScrollPane objectScrollPane = (JScrollPane)Main.createObjectView();
+            tabs.add(objectScrollPane, "Object",0);
+            tabs.setSelectedIndex(0);
+            this.componentSet = Main.getSet1();
         }
+        else {
+            this.tabs.remove(1);
+            JScrollPane eventScrollPanel = (JScrollPane)Main.createEventView();
+            tabs.add(eventScrollPanel, "Event",1);
+            tabs.setSelectedIndex(1);
+            this.componentSet = Main.getSet2();
+        }
+        this.button.setVisible(false);
+        this.panel.remove(this.button);
     }
 
-    public void load() {
-
-        /*
-        while(n1 < n1_goal)
-        {
-            TypeAdd.doClick();
-            n1 = Types.size();
-        }
-        while(n2 < n2_goal)
-        {
-            CompAdd.doClick();
-            n2 = CompNames.size();
-        }
-        while(n5 < n5_goal)
-        {
-            IntrinsicAdd.doClick();
-            n5 = IntrinsicNames.size();
-        }
-        while(n6 < n6_goal)
-        {
-            ExtrinsicAdd.doClick();
-            n6 = ExtrinsicNames.size();
-        }
-        while(n7 < n7_goal)
-        {
-            AffordancesAdd.doClick();
-            n7 = Affordances.size();
-        }
-        for(int i = 0; i < n1; i++)
-        {
-            Types.get(i).setSelectedItem(readTypes.get(i));
-        }
-        for(int i = 0; i < n2; i++)
-        {
-            CompNames.get(i).setText(readComponents.get(i));
-            CompNames.get(i).validate();
-            CompInds.get(i).setText(readCompInds.get(i));
-            CompInds.get(i).validate();
-            if(readConcaveInds.contains(readCompInds.get(i)))
-                Concavity.get(i).setSelected(true);
-            else
-                Concavity.get(i).setSelected(false);
-        }
-
-        for(int i = 0; i < n5; i++)
-        {
-            IntrinsicNames.get(i).setText(readIntrinsicNames.get(i));
-            IntrinsicValues.get(i).setText(readIntrinsicValues.get(i));
-        }
-        for(int i = 0; i < n6; i++)
-        {
-            ExtrinsicNames.get(i).setText(readExtrinsicNames.get(i));
-            ExtrinsicValues.get(i).setText(readExtrinsicValues.get(i));
-        }
-        for(int i = 0; i < n7; i++)
-        {
-            Affordances.get(i).setText(readAffords.get(i));
-        }
-        */
-    }
-
-    public void read() throws IOException, SAXException, ParserConfigurationException
-    {
+    public void read() {
         try {
             File fXmlFile = new File(path);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -210,162 +138,132 @@ public class LoadButton extends Button {
             Document doc = dBuilder.parse(fXmlFile);
             doc.getDocumentElement().normalize();
 
-            NodeList allNodes = doc.getElementsByTagName("VoxML");
-            for(String key : map.keySet()) {
-                Node curr = searchNode(allNodes, key);
-                if(curr != null) {
-                    if(key=="Pred")
+            String readName  = "";
+            String readHead = "";
+            String readHeadIndex = "";
+            ArrayList<String> readTypes = new ArrayList<String>();
+            NodeList nList = doc.getElementsByTagName("Lex");
+            for (int i = 0; i < nList.getLength(); i++) {
+                Node nNode = nList.item(i);
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+                    readName = eElement.getElementsByTagName("Pred").item(0).getTextContent();
+                    String readTypesUnparsed = eElement.getElementsByTagName("Type").item(0).getTextContent();
+                    int numTypes = countChar(readTypesUnparsed,'*') + 1;
+                    for(int j = 0; j < numTypes; j++)
                     {
-                        readName = curr.getTextContent();
-                    }
-                    else if(key=="Head")
-                    {
-                        String readHeadUnparsed = curr.getTextContent();
-                        readHead = readHeadUnparsed.substring(0, readHeadUnparsed.length() - 3);
-                        readHeadIndex = readHeadUnparsed.substring(readHeadUnparsed.length() - 2, readHeadUnparsed.length() - 1);
-                    }
-                    else if(key=="Type")
-                    {
-                        String readTypesUnparsed = curr.getTextContent();
-                        int numTypes = countChar(readTypesUnparsed, '*');
-                        for (int j = 0; j <= numTypes; j++) {
-                            int indJ = readTypesUnparsed.indexOf("*");
-                            if (indJ >= 0) {
-                                readTypes.add(readTypesUnparsed.substring(0, indJ));
-                                readTypesUnparsed = readTypesUnparsed.substring(indJ + 1, readTypesUnparsed.length());
-                            } else {
-                                readTypes.add(readTypesUnparsed);
-                            }
+                        int indJ = readTypesUnparsed.indexOf("*");
+                        if(indJ >= 0)
+                        {
+                            readTypes.add(readTypesUnparsed.substring(0,indJ));
+                            readTypesUnparsed = readTypesUnparsed.substring(indJ+1);
                         }
-                    }
-                    else if(key=="Components")
-                    {
-                        for (int i = 0; i < ((NodeList)curr).getLength(); i++) {
-                            Node nnNode1 = ((NodeList)curr).item(i);
-                            if (nnNode1.getNodeType() == Node.ELEMENT_NODE) {
-                                String unparsed = nnNode1.getAttributes().getNamedItem("Value").getNodeValue();
-                                String name = unparsed.substring(0, unparsed.length() - 3);
-                                String ind = unparsed.substring(unparsed.length() - 2, unparsed.length() - 1);
-                                readComps.add(name);
-                                readCompInds.add(ind);
-                            }
+                        else
+                        {
+                            readTypes.add(readTypesUnparsed);
                         }
-                    }
-                    else if(key=="Concavity")
-                    {
-                        String readConcavityUnparsed = curr.getTextContent();
-                        int numConcave = countChar(readConcavityUnparsed, '[');
-                        for (int i = 0; i < numConcave; i++) {
-                            int ind = readConcavityUnparsed.indexOf("[");
-                            readConcavity.add(readConcavityUnparsed.substring(ind + 1, ind + 2));
-                            readConcavityUnparsed = readConcavityUnparsed.substring(ind + 2, readConcavityUnparsed.length());
-                        }
-                    }
-                    else if(key=="RotatSym")
-                    {
-                        readRotSym = curr.getTextContent();
-                    }
-                    else if(key=="ReflSym")
-                    {
-                        readReflSym = curr.getTextContent();
-                    }
-                    else if(key=="Args")
-                    {
-                        String unparsed = curr.getAttributes().getNamedItem("Value").getNodeValue();
-                        readArgs.add(unparsed);
-                    }
-                    else if(key=="Body")
-                    {
-                        String unparsed = curr.getAttributes().getNamedItem("Value").getNodeValue();
-                        readBody.add(unparsed);
-                    }
-                    else if(key=="Scale")
-                    {
-                        readScale = curr.getTextContent();
-                    }
-                    else if(key=="Intrinsic" || key=="Intr")
-                    {
-                        for (int i = 0; i < ((NodeList)curr).getLength(); i++) {
-                            Node Hab = ((NodeList)curr).item(i);
-                            String name = Hab.getAttributes().getNamedItem("Name").getNodeValue();
-                            String value = Hab.getAttributes().getNamedItem("Value").getNodeValue();
-                            readIntrinsicNames.add(name);
-                            readIntrinsicValues.add(value);
-                        }
-                    }
-                    else if(key=="Extrinsic" || key=="Extr")
-                    {
-                        for (int i = 0; i < ((NodeList)curr).getLength(); i++) {
-                            Node Hab = ((NodeList) curr).item(i);
-                            String name = Hab.getAttributes().getNamedItem("Name").getNodeValue();
-                            String value = Hab.getAttributes().getNamedItem("Value").getNodeValue();
-                            readExtrinsicNames.add(name);
-                            readExtrinsicNames.add(value);
-                        }
-                    }
-                    else if(key == "Habitat")
-                    {
-                        /*TODO*/
-                    }
-                    else if(key=="Affordances")
-                    {
-                        for (int i = 0; i < ((NodeList)curr).getLength(); i++) {
-                            Node afford = ((NodeList)curr).item(i);
-                            if (afford.getNodeType() == Node.ELEMENT_NODE) {
-                                readAffordances.add(afford.getAttributes().getNamedItem("Formula").getNodeValue());
-                            }
-                        }
-                    }
-                    else if(key=="Movable")
-                    {
-                        readMovable = curr.getTextContent();
                     }
                 }
             }
-            reset();
-            load();
-        } catch (Exception e) {
-                e.printStackTrace();
+            NodeList nList1 = (NodeList) doc.getElementsByTagName("Type").item(1);
+            readHead = "";
+            for (int temp = 0; temp < nList1.getLength(); temp++) {
+                Node nNode1 = nList1.item(temp);
+                if (nNode1.getNodeName().equals("Head")) {
+                    String readHeadUnparsed = nNode1.getTextContent();
+                    if(entityType.equals("Object") && readHeadUnparsed.length() > 2 &&
+                            readHeadUnparsed.substring(readHeadUnparsed.length() - 3, readHeadUnparsed.length() - 2).equals("[") &&
+                            readHeadUnparsed.substring(readHeadUnparsed.length() - 1).equals("]")) {
+                        readHead = readHeadUnparsed.substring(0, readHeadUnparsed.length() - 3);
+                        readHeadIndex = readHeadUnparsed.substring(readHeadUnparsed.length() - 2, readHeadUnparsed.length() - 1);
+                    }
+                    else
+                    {
+                        readHead = readHeadUnparsed;
+                    }
+                }
+            }
+
+            TextField Name = (TextField)searchField("Pred");
+            if(Name != null)
+            {
+                Name.textfield.setText(readName);
+                Name.pressEnter();
+            }
+            DropDown Head = (DropDown)searchField("Head");
+            if(Head != null)
+            {
+                Head.dropdown.setSelectedItem(readHead);
+            }
+            DropDownList Types = (DropDownList)searchField("Type");
+            AddButton TypesAdd = (AddButton)searchButton("Type_add");
+            if(Types != null)
+            {
+                for(int i = 0; i < readTypes.size()-1; i++)
+                {
+                    TypesAdd.button.doClick();
+                }
+                for(int i = 0; i < readTypes.size(); i++)
+                {
+                    Types.getList().get(i).dropdown.setSelectedItem(readTypes.get(i));
+                }
+            }
+
+            if(entityType.equals("Object"))
+            {
+                TextField Head_index = (TextField)searchField("Head_index");
+                if(Head_index != null)
+                {
+                    Head_index.textfield.setText(readHeadIndex);
+                    Head_index.pressEnter();
+                }
+                //components
+                //rotsym
+                //reflsym
+                //intrinsic
+                //extrinsic
+                //affordances
+                //scale
+                //movable
+            }
+            else
+            {
+                //args
+                //body
+            }
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
         }
     }
 
-    public Node searchNode(NodeList list, String key)
+    public AnnotationField searchField(String key)
     {
-        for(int i = 0; i < list.getLength(); i++)
+        for(AnnotationComponent comp : componentSet)
         {
-            if(list.item(i).getNodeName().equals(key) &&
-                    ((list.item(i).getNodeType() == Node.ELEMENT_NODE && !list.item(i).getTextContent().equals(""))
-                    || list.item(i).hasChildNodes()))
-                return list.item(i);
-            if(list.item(i).hasChildNodes())
-                return searchNode((NodeList)list.item(i),key);
+            if(comp instanceof AnnotationField && ((AnnotationField)comp).getKey() != null && ((AnnotationField)comp).getKey().equals(key))
+                return (AnnotationField)comp;
+        }
+        return null;
+    }
+    public Button searchButton(String key)
+    {
+        for(AnnotationComponent comp : componentSet)
+        {
+            if(comp instanceof Button && ((Button)comp).getKey() != null && ((Button)comp).getKey().equals(key))
+                return (Button)comp;
         }
         return null;
     }
 
-    public int countChar(String str, char c)
+    public static int countChar(String str, char c)
     {
         int count = 0;
         for(int i=0; i < str.length(); i++)
         { if(str.charAt(i) == c) {count++;} }
         return count;
-    }
-
-    public HashMap<String, ArrayList<String>> initiateReadMap() {
-        HashMap<String, ArrayList<String>> readMap = new HashMap<String, ArrayList<String>>();
-        readMap.put("Type", readTypes);
-        readMap.put("Components", readComps); //
-        readMap.put("ComponentsInds", readCompInds); //
-        readMap.put("ComponentsConcavity", readConcavity); //
-        readMap.put("Intrinsic", readIntrinsicNames); //
-        readMap.put("IntrinsicInds", readIntrinsicValues); //
-        readMap.put("Extrinsic", readExtrinsicNames); //
-        readMap.put("ExtrinsicInds", readExtrinsicValues); //
-        readMap.put("Affordances", readAffordances); //
-        readMap.put("Args", readArgs); //
-        readMap.put("ArgsInds", readArgInds); //
-        readMap.put("Body", readBody); //
-        readMap.put("BodyInds", readBodyInds); //
-        return readMap;
     }
 }

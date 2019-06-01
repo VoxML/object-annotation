@@ -3,12 +3,13 @@ package field;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Label extends AnnotationComponent {
     public JLabel label;
     public String name;
 
-    public Label(ArrayList<AnnotationComponent> set, String name, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next, JPanel panel)
+    public Label(HashSet<AnnotationComponent> set, String name, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next, JPanel panel)
     {
         super(set);
         if(!set.contains(this))
@@ -21,7 +22,7 @@ public class Label extends AnnotationComponent {
         createLabel(bounds, name);
     }
 
-    public Label(ArrayList<AnnotationComponent> set, String name, Rectangle bounds, JPanel panel)
+    public Label(HashSet<AnnotationComponent> set, String name, Rectangle bounds, JPanel panel)
     {
         super(set);
         this.set = set;

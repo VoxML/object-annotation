@@ -6,18 +6,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Button extends AnnotationComponent {
     public String name;
     public JButton button;
     public ActionListener AL;
 
-    public Button(ArrayList<AnnotationComponent> set)
+    public Button(HashSet<AnnotationComponent> set)
     {super(set);}
 
     public Button() {    }
 
-    public Button(String name, AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, JPanel panel, ActionListener AL, ArrayList<AnnotationComponent> set)
+    public Button(String name, AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, JPanel panel, ActionListener AL,
+                  HashSet<AnnotationComponent> set)
     {
         super(set);
         this.set = set;
@@ -31,7 +33,7 @@ public class Button extends AnnotationComponent {
         updateLocation();
     }
 
-    public Button(String name, Rectangle bounds, JPanel panel, ActionListener AL, ArrayList<AnnotationComponent> set)
+    public Button(String name, Rectangle bounds, JPanel panel, ActionListener AL, HashSet<AnnotationComponent> set)
     {
         super(set);
         this.set = set;
@@ -57,6 +59,11 @@ public class Button extends AnnotationComponent {
         super.setHeight(newHeight);
         if(button!=null && bounds != null)
             button.setBounds(bounds);
+    }
+
+    public String getKey()
+    {
+        return "button";
     }
 
     protected JButton createButton(String name, Rectangle buttonBounds, ActionListener AL) {

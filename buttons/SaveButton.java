@@ -2,79 +2,66 @@ package buttons;
 
 import field.AnnotationComponent;
 import lists.FieldList;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class SaveButton extends Button {
 
-    protected HashMap<String,ArrayList<String>> map;
-    protected ArrayList<AnnotationComponent> componentSet;
+    protected HashMap<String, ArrayList<String>> map;
+    protected HashSet<AnnotationComponent> componentSet;
     protected String path;
-    private String readName, readHead, readHeadIndex, readRotSym, readReflSym, readScale, readMovable, readEmbeddingSpace;
-    private HashMap<String, ArrayList<String>> readMap = initiateReadMap();
-    private ArrayList<String> readTypes = new ArrayList<String>();
-    private ArrayList<String> readComps = new ArrayList<String>();
-    private ArrayList<String> readCompInds = new ArrayList<String>();
-    private ArrayList<String> readConcavity = new ArrayList<String>();
-    private ArrayList<String> readIntrinsicNames = new ArrayList<String>();
-    private ArrayList<String> readIntrinsicValues = new ArrayList<String>();
-    private ArrayList<String> readExtrinsicNames = new ArrayList<String>();
-    private ArrayList<String> readExtrinsicValues = new ArrayList<String>();
-    private ArrayList<String> readAffordances = new ArrayList<String>();
-    private ArrayList<String> readArgs = new ArrayList<String>();
-    private ArrayList<String> readArgInds = new ArrayList<String>();
-    private ArrayList<String> readBody = new ArrayList<String>();
-    private ArrayList<String> readBodyInds = new ArrayList<String>();
+    private String fileName;
+    private String entityType;
 
     public SaveButton(AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, JPanel panel,
-                      HashMap<String,ArrayList<String>> map, ArrayList<AnnotationComponent> set)
-    {
+                      HashMap<String, ArrayList<String>> map, HashSet<AnnotationComponent> set, String entityType) {
         super("save", prev, next, bounds, panel, null, null);
         this.AL = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 path = getPath();
-                //try {
                 save();
-                /* { (IOException e1) {
-                    e1.printStackTrace();
-                } catch (SAXException e1) {
-                    e1.printStackTrace();
-                } catch (ParserConfigurationException e1) {
-                    e1.printStackTrace();
-                } */
             }
         };
+        this.button.addActionListener(this.AL);
         this.map = map;
         this.componentSet = set;
-        button = createButton(bounds);
+        this.name = "";
+        this.entityType = entityType;
     }
 
-    public SaveButton(Rectangle bounds, FieldList list, JPanel panel, HashMap<String,ArrayList<String>> map, ArrayList<AnnotationComponent> set)
-    {
+    public SaveButton(Rectangle bounds, FieldList list, JPanel panel, HashMap<String, ArrayList<String>> map,
+                      HashSet<AnnotationComponent> set, String entityType)
+            throws ParserConfigurationException {
         super("load", bounds, panel, null, null);
         this.AL = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 path = getPath();
-                //try {
-                    save();
-                /* { (IOException e1) {
-                    e1.printStackTrace();
-                } catch (SAXException e1) {
-                    e1.printStackTrace();
-                } catch (ParserConfigurationException e1) {
-                    e1.printStackTrace();
-                } */
+                save();
             }
         };
         this.map = map;
         this.componentSet = set;
         button = createButton(bounds);
+        this.name = "";
+        this.entityType = entityType;
     }
 
     protected JButton createButton(Rectangle buttonBounds) {
@@ -82,198 +69,245 @@ public class SaveButton extends Button {
             @Override
             public void actionPerformed(ActionEvent e) {
                 path = getPath();
-                //try {
                 save();
-                /* { (IOException e1) {
-                    e1.printStackTrace();
-                } catch (SAXException e1) {
-                    e1.printStackTrace();
-                } catch (ParserConfigurationException e1) {
-                    e1.printStackTrace();
-                } */
             }
         };
         button = super.createButton("save", buttonBounds, AL);
         return button;
     }
 
-    public String getPath()
-    {
+    public String getPath() {
+        Component frame = new JFrame();
+        JOptionPane.showMessageDialog(frame , "Please select an folder to save the XML file.");
         JFileChooser fileChooser = new JFileChooser();
-        // For Directory
-        // fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        // For File
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setAcceptAllFileFilterUsed(false);
         int rVal = fileChooser.showOpenDialog(null);
-        if (rVal == JFileChooser.APPROVE_OPTION) {
-            System.out.println("PATH = " + fileChooser.getSelectedFile().toString());
-        }
-        path = fileChooser.getSelectedFile().toString();
+        if (fileChooser.getSelectedFile() != null)
+            path = fileChooser.getSelectedFile().toString();
+        else
+            path = "";
+        if(map != null && map.containsKey("Pred") && map.get("Pred").size()>0)
+            fileName = map.get("Pred").get(0);
+        else
+            fileName = "blank";
         return path;
     }
 
     public void save() {
-        /*
-           DocumentBuilderFactory documentFactory2 = DocumentBuilderFactory.newInstance();
-           DocumentBuilder documentBuilder2 = documentFactory2.newDocumentBuilder();
-           Document document2 = documentBuilder2.newDocument();
+        try {
+            DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+            Document document = documentBuilder.newDocument();
 
-           // root element
-           Element root2 = document2.createElement("VoxML");
-           document2.appendChild(root2);
-           //Entity type element
-           Element Entity2 = document2.createElement("Entity");
-           Attr EntityType2 = document2.createAttribute("Type");
-           EntityType2.setValue("Object");
-           Entity2.setAttributeNode(EntityType2);
-           root2.appendChild(Entity2);
-           // Lex element
-           Element Lex2 = document2.createElement("Lex");
-           root2.appendChild(Lex2);
-           // Type Element
-           Element Type2a = document2.createElement("Type");
-           root2.appendChild(Type2a);
-           // Pred element
-           Element Pred2 = document2.createElement("Pred");
-           Pred2.appendChild(document2.createTextNode(Name.getText()));
-           Lex2.appendChild(Pred2);
-           // Type element
-           Element Type2b = document2.createElement("Type");
-           Type2b.appendChild(document2.createTextNode(typesString));
-           Lex2.appendChild(Type2b);
-           // Head element
-           Element Head2 = document2.createElement("Head");
-           Head2.appendChild(document2.createTextNode(headString));
-           Type2a.appendChild(Head2);
-           // Components element
-           Element Components2 = document2.createElement("Components");
-           for(int i = 0; i < n2; i++)
-           {
-            Element ComponentA = document2.createElement("Component");
-            Attr Value = document2.createAttribute("Value");
-            Value.setValue(componentsStrings.get(i));
-            ComponentA.setAttributeNode(Value);
-            Components2.appendChild(ComponentA);
-           }
-           Type2a.appendChild(Components2);
-           // More elements
-           Element Concavity2 = document2.createElement("Concavity");
-           String concavityString = "";
-           for(int i = 0; i < n2; i++)
-           {
-            if(Concavity.get(i).isSelected())
-             concavityString = concavityString + "Concave[" + CompInds.get(i).getText() + "],";
-           }
-           if(concavityString.length()>0)
-            concavityString = concavityString.substring(0,concavityString.length()-1);
-           Concavity2.appendChild(document2.createTextNode(concavityString));
-           Type2a.appendChild(Concavity2);
-           Element RotatSym2 = document2.createElement("RotatSym");
-           RotatSym2.appendChild(document2.createTextNode(rotSymString));
-           Type2a.appendChild(RotatSym2);
-           Element ReflSym2 = document2.createElement("ReflSym");
-           ReflSym2.appendChild(document2.createTextNode(reflSymString));
-           Type2a.appendChild(ReflSym2);
-           Element Habitat2 = document2.createElement("Habitat");
-           root2.appendChild(Habitat2);
-           Element Intrinsic2 = document2.createElement("Intrinsic");
-           Habitat2.appendChild(Intrinsic2);
-           Element Extrinsic2 = document2.createElement("Extrinsic");
-           Habitat2.appendChild(Extrinsic2);
-           for(int i = 0; i < n5; i++)
-           {
-            Element Intr = document2.createElement("Intr");
-            Attr Value = document2.createAttribute("Value");
-            Value.setValue(IntrinsicValues.get(i).getText());
-            Attr Name = document2.createAttribute("Name");
-            Name.setValue(IntrinsicNames.get(i).getText());
-            Intr.setAttributeNode(Name);
-            Intr.setAttributeNode(Value);
-            Intrinsic2.appendChild(Intr);
-           }
-           for(int i = 0; i < n6; i++)
-           {
-            Element Extr = document2.createElement("Extr");
-            Attr Value = document2.createAttribute("Value");
-            Value.setValue(IntrinsicValues.get(i).getText());
-            Attr Name = document2.createAttribute("Name");
-            Name.setValue(IntrinsicNames.get(i).getText());
-            Extr.setAttributeNode(Name);
-            Extr.setAttributeNode(Value);
-            Extrinsic2.appendChild(Extr);
-           }
-           Element Afford_Str2 = document2.createElement("Afford_Str");
-           root2.appendChild(Afford_Str2);
-           Element AffordancesElement2 = document2.createElement("Affordances");
-           Afford_Str2.appendChild(AffordancesElement2);
-           for(int i = 0; i < n7; i++)
-           {
-            Element Affordance = document2.createElement("Affordance");
-            Attr Formula = document2.createAttribute("Formula");
-            Formula.setValue(Affordances.get(i).getText());
-            Affordance.setAttributeNode(Formula);
-            AffordancesElement2.appendChild(Affordance);
-           }
-           Element Embodiment2 = document2.createElement("Embodiment");
-           root2.appendChild(Embodiment2);
-           Element ScaleElement2 = document2.createElement("Scale");
-           ScaleElement2.appendChild(document2.createTextNode((String) Scale.getSelectedItem()));
-           Embodiment2.appendChild(ScaleElement2);
-           Element MovableElement2 = document2.createElement("Movable");
-           String MovableString;
-           if(Movable.isSelected())
-            MovableString = "true";
-           else
-            MovableString = "false";
-           MovableElement2.appendChild(document2.createTextNode(MovableString));
-           Embodiment2.appendChild(MovableElement2);
+            Element root = document.createElement("VoxML");
+            Attr XMLNS_XSI = document.createAttribute("xmlns:xsi");
+            Attr XMLNS_XSD = document.createAttribute("xmlns:xsd");
+            XMLNS_XSI.setValue("http://www.w3.org/2001/XMLSchema-instance");
+            XMLNS_XSD.setValue("http://www.w3.org/2001/XMLSchema");
+            root.setAttributeNode(XMLNS_XSD);
+            root.setAttributeNode(XMLNS_XSI);
+            document.appendChild(root);
+            Element Entity = document.createElement("Entity");
+            Attr EntityType = document.createAttribute("Type");
+            EntityType.setValue(entityType);
+            Entity.setAttributeNode(EntityType);
+            root.appendChild(Entity);
+            Element Lex = document.createElement("Lex");
+            root.appendChild(Lex);
+            Element TypeA = document.createElement("Type");
+            root.appendChild(TypeA);
+            Element Pred = document.createElement("Pred");
+            if(map.containsKey("Pred") && map.get("Pred").size()>0)
+                Pred.appendChild(document.createTextNode(map.get("Pred").get(0)));
+            else
+                Pred.appendChild(document.createTextNode(""));
+            Lex.appendChild(Pred);
+            Element TypeB = document.createElement("Type");
+            String typesString = "";
+            ArrayList<String> readTypes = new ArrayList<String>();
+            if(map.containsKey("Type"))
+                readTypes = map.get("Type");
+            for(int i = 0; i < readTypes.size()-1; i++)
+                typesString += readTypes.get(i) + "*";
+            if(readTypes.size() > 0)
+                typesString += readTypes.get(readTypes.size()-1);
+            TypeB.appendChild(document.createTextNode(typesString));
+            Lex.appendChild(TypeB);
+            String headString = "";
+            Element Head = document.createElement("Head");
+            if(map.containsKey("Head") && map.get("Head").size()>0)
+                headString += map.get("Head").get(0);
+            if(entityType.equals("Object") && map.containsKey("Head_index") && map.get("Head_index").size()>0 && !map.get("Head_index").get(0).equals(""))
+                headString += "[" + map.get("Head_index").get(0) + "]";
+            Head.appendChild(document.createTextNode(headString));
+            TypeA.appendChild(Head);
+            Element Components = document.createElement("Components");
+            if(map.containsKey("Components")) {
+                ArrayList<String> readComps = map.get("Components");
+                for (int i = 0; i < readComps.size(); i++) {
+                    Element currComp = document.createElement("Component");
+                    Attr Value = document.createAttribute("Value");
+                    if(!map.get("Components_index["+i+"]").get(0).equals(""))
+                        Value.setValue(map.get("Components["+i+"]").get(0) + "[" + map.get("Components_index["+i+"]").get(0) + "]");
+                    else
+                        Value.setValue(map.get("Components["+i+"]").get(0));
+                    currComp.setAttributeNode(Value);
+                    Components.appendChild(currComp);
+                }
+            }
+            TypeA.appendChild(Components);
+            Element Concavity = document.createElement("Concavity");
+            String concavityString = "";
+            if(map.containsKey("Concavity")) {
+                for (int i = 0; i < map.get("Concavity").size()-1; i++) {
+                    concavityString += map.get("Concavity").get(i) + "*";
+                }
+            }
+            if(map.get("Concavity").size()>0)
+                concavityString += map.get("Concavity").get(map.get("Concavity").size()-1);
+            Concavity.appendChild(document.createTextNode(concavityString));
+            TypeA.appendChild(Concavity);
+            Element RotatSym = document.createElement("RotatSym");
+            String rotSymString = "";
+            String[] rotSyms = {"X","Y","Z"};
+            for(int i = 0; i < rotSyms.length; i++) {
+                if (map.containsKey("RotatSym["+i+"]") && map.get("RotatSym["+i+"]").size() > 0 && map.get("RotatSym["+i+"]").get(0).equals("true"))
+                    rotSymString += rotSyms[i] + ",";
+            }
+            if(rotSymString.length()>0)
+                rotSymString = rotSymString.substring(0,rotSymString.length()-1);
+            RotatSym.appendChild(document.createTextNode(rotSymString));
+            TypeA.appendChild(RotatSym);
+            Element ReflSym = document.createElement("ReflSym");
+            String reflSymString = "";
+            String[] reflSyms = {"XY","YZ","XZ"};
+            for(int i = 0; i < rotSyms.length; i++) {
+                if (map.containsKey("ReflSym["+i+"]") && map.get("ReflSym["+i+"]").size() > 0 && map.get("ReflSym["+i+"]").get(0).equals("true"))
+                    reflSymString += reflSyms[i] + ",";
+            }
+            if(reflSymString.length()>0)
+                reflSymString = reflSymString.substring(0,reflSymString.length()-1);
+            ReflSym.appendChild(document.createTextNode(reflSymString));
+            TypeA.appendChild(ReflSym);
+            Element Habitat = document.createElement("Habitat");
+            root.appendChild(Habitat);
+            Element Intrinsic = document.createElement("Intrinsic");
+            Habitat.appendChild(Intrinsic);
+            Element Extrinsic = document.createElement("Extrinsic");
+            Habitat.appendChild(Extrinsic);
+            if(map.containsKey("Intrinsic")) {
+                for (int i = 0; i < map.get("Intrinsic").size(); i++) {
+                    Element Intr = document.createElement("Intr");
+                    Attr Value = document.createAttribute("Value");
+                    Value.setValue(map.get("Intrinsic_index["+i+"]").get(0));
+                    Attr Name = document.createAttribute("Name");
+                    Name.setValue(map.get("Intrinsic["+i+"]").get(0));
+                    Intr.setAttributeNode(Name);
+                    Intr.setAttributeNode(Value);
+                    Intrinsic.appendChild(Intr);
+                }
+            }
+            if(map.containsKey("Extrinsic")) {
+                for (int i = 0; i < map.get("Extrinsic").size(); i++) {
+                    Element Extr = document.createElement("Extr");
+                    Attr Value = document.createAttribute("Value");
+                    Value.setValue(map.get("Extrinsic_index["+i+"]").get(0));
+                    Attr Name = document.createAttribute("Name");
+                    Name.setValue(map.get("Extrinsic["+i+"]").get(0));
+                    Extr.setAttributeNode(Name);
+                    Extr.setAttributeNode(Value);
+                    Extrinsic.appendChild(Extr);
+                }
+            }
+            Element Afford_Str = document.createElement("Afford_Str");
+            root.appendChild(Afford_Str);
+            Element AffordancesElement = document.createElement("Affordances");
+            Afford_Str.appendChild(AffordancesElement);
+            if(map.containsKey("Affordances")) {
+                for (int i = 0; i < map.get("Affordances").size(); i++) {
+                    Element Affordance = document.createElement("Affordance");
+                    Attr Formula = document.createAttribute("Formula");
+                    Formula.setValue(map.get("Affordances").get(i));
+                    Affordance.setAttributeNode(Formula);
+                    AffordancesElement.appendChild(Affordance);
+                }
+            }
+            Element Embodiment = document.createElement("Embodiment");
+            root.appendChild(Embodiment);
+            Element ScaleElement = document.createElement("Scale");
+            if(map.containsKey("Scale")) {
+                ScaleElement.appendChild(document.createTextNode(map.get("Scale").get(0)));
+            }
+            Embodiment.appendChild(ScaleElement);
+            Element MovableElement = document.createElement("Movable");
+            if(map.containsKey("Movable")) {
+                MovableElement.appendChild(document.createTextNode(map.get("Movable").get(0)));
+            }
+            Embodiment.appendChild(MovableElement);
+            Element Args = document.createElement("Args");
+            if(map.containsKey("Args")) {
+                for (int i = 0; i < map.get("Args").size(); i++) {
+                    Element Arg = document.createElement("Arg");
+                    Attr Value = document.createAttribute("Value");
+                    if(!map.get("Args_index["+i+"]").get(0).equals(""))
+                        Value.setValue(map.get("Args["+i+"]").get(0) + "[" + map.get("Args_index["+i+"]").get(0) + "]");
+                    else
+                        Value.setValue(map.get("Args["+i+"]").get(0));
+                    Arg.setAttributeNode(Value);
+                    Args.appendChild(Arg);
+                }
+            }
+            TypeA.appendChild(Args);
+            Element Body = document.createElement("Body");
+            if(map.containsKey("Body")) {
+                for (int i = 0; i < map.get("Body").size(); i++) {
+                    Element Subevent = document.createElement("Subevent");
+                    Attr Value = document.createAttribute("Value");
+                    if(!map.get("Body_index["+i+"]").get(0).equals(""))
+                        Value.setValue(map.get("Body["+i+"]").get(0) + "[" + map.get("Body_index["+i+"]").get(0) + "]");
+                    else
+                        Value.setValue(map.get("Body["+i+"]").get(0));
+                    Subevent.setAttributeNode(Value);
+                    Body.appendChild(Subevent);
+                }
+            }
+            TypeA.appendChild(Body);
+            Element Scale1 = document.createElement("Scale");
+            Element Arity = document.createElement("Arity");
+            Element Class = document.createElement("Class");
+            Element Value = document.createElement("Value");
+            Element Constr = document.createElement("Constr");
+            TypeA.appendChild(Scale1);
+            TypeA.appendChild(Arity);
+            TypeA.appendChild(Class);
+            TypeA.appendChild(Value);
+            TypeA.appendChild(Constr);
+            Element Attributes = document.createElement("Attributes");
+            Element Attrs = document.createElement("Attrs");
+            Attributes.appendChild(Attrs);
+            root.appendChild(Attributes);
 
-           // create the xml file
-           //transform the DOM Object to an XML File
-           TransformerFactory transformerFactory2 = TransformerFactory.newInstance();
-           Transformer transformer2 = transformerFactory2.newTransformer();
-           DOMSource domSource2 = new DOMSource(document2);
-           String xmlFilePath2 = path;
-           File file2 = new File(xmlFilePath2);
-           StreamResult streamResult = new StreamResult(file2);
-           transformer2.setOutputProperty(OutputKeys.INDENT, "yes");
-           transformer2.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,"yes");
-           transformer2.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-           checkNullNodes(document2);
-           transformer2.transform(domSource2, streamResult);
-          } catch (ParserConfigurationException pce) {
-           pce.printStackTrace();
-          } catch (TransformerException tfe) {
-           tfe.printStackTrace();
-          }
+            // create the xml file
+            //transform the DOM Object to an XML File
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource domSource = new DOMSource(document);
+            File file = new File(path + "\\" + fileName + ".xml");
+            StreamResult streamResult = new StreamResult(file);
+            document.setXmlVersion("1.0");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "us-ascii");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,"yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            transformer.transform(domSource, streamResult);
 
-        */
-    }
-
-    public int countChar(String str, char c)
-    {
-        int count = 0;
-        for(int i=0; i < str.length(); i++)
-        { if(str.charAt(i) == c) {count++;} }
-        return count;
-    }
-
-    public HashMap<String, ArrayList<String>> initiateReadMap() {
-        HashMap<String, ArrayList<String>> readMap = new HashMap<String, ArrayList<String>>();
-        readMap.put("Type", readTypes);
-        readMap.put("Components", readComps); //
-        readMap.put("ComponentsInds", readCompInds); //
-        readMap.put("ComponentsConcavity", readConcavity); //
-        readMap.put("Intrinsic", readIntrinsicNames); //
-        readMap.put("IntrinsicInds", readIntrinsicValues); //
-        readMap.put("Extrinsic", readExtrinsicNames); //
-        readMap.put("ExtrinsicInds", readExtrinsicValues); //
-        readMap.put("Affordances", readAffordances); //
-        readMap.put("Args", readArgs); //
-        readMap.put("ArgsInds", readArgInds); //
-        readMap.put("Body", readBody); //
-        readMap.put("BodyInds", readBodyInds); //
-        return readMap;
+        } catch (ParserConfigurationException pce) {
+            pce.printStackTrace();
+        } catch (TransformerConfigurationException tce) {
+            tce.printStackTrace();
+        } catch (TransformerException tfe) {
+            tfe.printStackTrace();
+        }
     }
 }

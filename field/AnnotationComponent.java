@@ -1,10 +1,10 @@
 package field;
 
 import lists.FieldList;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -12,16 +12,16 @@ public class AnnotationComponent {
     //includes buttons as well as fields
     public Rectangle bounds;
     public AnnotationComponent prev; //vertically previous component
-    public AnnotationComponent next; //vertically next component
     public JPanel panel;
-    public ArrayList<AnnotationComponent> set;
+    public HashSet<AnnotationComponent> set;
     public boolean moved;
     public JScrollBar verticalBar;
+    public int indicator;
 
     public AnnotationComponent()
     {    }
 
-    public AnnotationComponent(ArrayList<AnnotationComponent> set)
+    public AnnotationComponent(HashSet<AnnotationComponent> set)
     {
         this.set = set;
         if(set != null) {
@@ -81,7 +81,8 @@ public class AnnotationComponent {
         }
     }
 
-    public void updateLocation() {
+    public void updateLocationPrev() {
+        this.indicator = 0;
         Rectangle rect = null;
         if(panel != null)
             rect = panel.getVisibleRect();
@@ -90,6 +91,8 @@ public class AnnotationComponent {
         q.add(this);
         while(!q.isEmpty())
         {
+            if(q.peek().indicator == 0 && q.peek() instanceof TextField && ((TextField)q.peek()).textfield != null && !((TextField)q.peek()).justCreated)
+                ((TextField) q.peek()).pressEnter();
             q.remove().updateLocation(10,true,q);
         }
         if(set != null) {
@@ -100,12 +103,20 @@ public class AnnotationComponent {
         if(panel != null) {
             panel.scrollRectToVisible(rect1);
         }
+        this.indicator=1;
+    }
+
+    public void updateLocation()
+    {
+        if(prev != null)
+            prev.updateLocationPrev();
+        else
+            this.updateLocationPrev();
     }
 
     public void setVerticalBar(JScrollBar bar)
     {
         this.verticalBar = bar;
-        updateLocation();
     }
 
     protected void setHeight(int newHeight)
@@ -119,7 +130,6 @@ public class AnnotationComponent {
 
     public void setPrev(AnnotationComponent prev) {
         this.prev = prev;
-        updateLocation();
     }
 
     public Rectangle getBounds()

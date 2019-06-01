@@ -7,12 +7,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class RemoveButton extends Button {
     protected FieldList list;
     protected int index;
 
-    public RemoveButton(AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, FieldList list, int index, JPanel panel, ArrayList<AnnotationComponent> set)
+    public RemoveButton(AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, FieldList list, int index, JPanel panel,
+                        HashSet<AnnotationComponent> set)
     {
         super("remove", prev, next, bounds, panel, new ActionListener() {
             @Override
