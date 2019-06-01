@@ -98,17 +98,14 @@ public class SaveButton extends Button {
 
     public void focus() {
         field.TextField Name = (field.TextField)searchComponent("Pred");
-        System.out.println(Name);
         if(Name != null) {
             Name.pressEnter();
             Name.getValueStrings();
         }
         field.DropDown Head = (field.DropDown)searchComponent("Head");
-        System.out.println(Head);
         if(Head != null)
             Head.getValueStrings();
         lists.DropDownList Type = (lists.DropDownList)searchComponent("Type");
-        System.out.println(Type);
         if(Type != null)
             Type.getValueStrings();
     }
