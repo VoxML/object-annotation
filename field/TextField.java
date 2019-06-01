@@ -108,6 +108,15 @@ public class TextField extends AnnotationField<String> {
         KeyEvent key = new KeyEvent(this.textfield, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_ENTER);
         this.textfield.dispatchEvent(key);
         submit.doClick();
+        getValueStrings();
+    }
+
+    public ArrayList<String> getValueStrings() {
+        String value = (String) textfield.getText();
+        valueStrings.clear();
+        valueStrings.add(value);
+        map.put(key, valueStrings);
+        return valueStrings;
     }
 
     public void setFrame(JFrame frame)

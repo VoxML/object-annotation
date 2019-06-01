@@ -176,6 +176,8 @@ public class TextFieldList extends FieldList {
 
     public LinkedList<field.TextField> getList() { return list; }
 
+    public LinkedList<field.TextField> getIndices() {return indices; }
+
     public void setAddButton(AddButton add) {this.add = add; }
 
     public ArrayList<String> getValueStrings(){

@@ -68,4 +68,6 @@ public class Label extends AnnotationComponent {
     {
         return "Label with text " + name;
     }
+
+    public String getKey() {return name + "_label"; }
 }

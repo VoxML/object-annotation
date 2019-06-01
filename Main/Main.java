@@ -174,12 +174,12 @@ public class Main extends JFrame {
         AddButton addType = new AddButton(Head, null, new Rectangle(350,20,100,25),Types,(JPanel)eventPanel,set2);
         field.Label ArgsLabel = new field.Label(set2,"Args: ", new Rectangle(15, 20, 100, 25),
                 Types,null,(JPanel)eventPanel);
-        TextFieldList Args = new TextFieldList("Args",new Rectangle(50, 20, 100, 25),true,true,Integer.MAX_VALUE,
+        TextFieldList Args = new TextFieldList("Args",new Rectangle(50, 20, 150, 25),true,false,Integer.MAX_VALUE,
             0,(JPanel)eventPanel,map,null,ArgsLabel,null,set2);
         AddButton addArg = new AddButton(Types,null,new Rectangle(350,20,100,25),Args,(JPanel)eventPanel,set2);
         field.Label BodyLabel = new field.Label(set2,"Body: ", new Rectangle(15, 20, 100, 25),
                 Args,null,(JPanel)eventPanel);
-        TextFieldList Body = new TextFieldList("Body",new Rectangle(50, 20, 100, 25),true,true,Integer.MAX_VALUE,
+        TextFieldList Body = new TextFieldList("Body",new Rectangle(50, 20, 150, 25),true,false,Integer.MAX_VALUE,
                 0,(JPanel)eventPanel,map,null,BodyLabel,null,set2);
         AddButton addBody = new AddButton(Args,null,new Rectangle(350,20,100,25),Body,(JPanel)eventPanel,set2);
         field.Label EmbeddingSpaceLabel = new field.Label(set2,"Embedding Space: ", new Rectangle(15,20,200,25),Body,

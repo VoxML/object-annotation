@@ -126,6 +126,11 @@ public class AnnotationComponent {
         this.bounds = b;
     }
 
+    public String getKey()
+    {
+        return "";
+    }
+
     public AnnotationComponent getPrev() {return prev; }
 
     public void setPrev(AnnotationComponent prev) {

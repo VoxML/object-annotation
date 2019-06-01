@@ -35,6 +35,7 @@ public class SaveButton extends Button {
         this.AL = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                focus();
                 path = getPath();
                 save();
             }
@@ -53,6 +54,7 @@ public class SaveButton extends Button {
         this.AL = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                focus();
                 path = getPath();
                 save();
             }
@@ -92,6 +94,23 @@ public class SaveButton extends Button {
         else
             fileName = "blank";
         return path;
+    }
+
+    public void focus() {
+        field.TextField Name = (field.TextField)searchComponent("Pred");
+        System.out.println(Name);
+        if(Name != null) {
+            Name.pressEnter();
+            Name.getValueStrings();
+        }
+        field.DropDown Head = (field.DropDown)searchComponent("Head");
+        System.out.println(Head);
+        if(Head != null)
+            Head.getValueStrings();
+        lists.DropDownList Type = (lists.DropDownList)searchComponent("Type");
+        System.out.println(Type);
+        if(Type != null)
+            Type.getValueStrings();
     }
 
     public void save() {
@@ -143,7 +162,7 @@ public class SaveButton extends Button {
             Head.appendChild(document.createTextNode(headString));
             TypeA.appendChild(Head);
             Element Components = document.createElement("Components");
-            if(map.containsKey("Components")) {
+            if(entityType.equals("Object") && map.containsKey("Components")) {
                 ArrayList<String> readComps = map.get("Components");
                 for (int i = 0; i < readComps.size(); i++) {
                     Element currComp = document.createElement("Component");
@@ -159,36 +178,40 @@ public class SaveButton extends Button {
             TypeA.appendChild(Components);
             Element Concavity = document.createElement("Concavity");
             String concavityString = "";
-            if(map.containsKey("Concavity")) {
-                for (int i = 0; i < map.get("Concavity").size()-1; i++) {
+            if(entityType.equals("Object") && map.containsKey("Concavity")) {
+                for (int i = 0; i < map.get("Concavity").size() - 1; i++) {
                     concavityString += map.get("Concavity").get(i) + "*";
                 }
+                if (map.get("Concavity").size() > 0)
+                    concavityString += map.get("Concavity").get(map.get("Concavity").size() - 1);
+                Concavity.appendChild(document.createTextNode(concavityString));
             }
-            if(map.get("Concavity").size()>0)
-                concavityString += map.get("Concavity").get(map.get("Concavity").size()-1);
-            Concavity.appendChild(document.createTextNode(concavityString));
             TypeA.appendChild(Concavity);
             Element RotatSym = document.createElement("RotatSym");
-            String rotSymString = "";
-            String[] rotSyms = {"X","Y","Z"};
-            for(int i = 0; i < rotSyms.length; i++) {
-                if (map.containsKey("RotatSym["+i+"]") && map.get("RotatSym["+i+"]").size() > 0 && map.get("RotatSym["+i+"]").get(0).equals("true"))
-                    rotSymString += rotSyms[i] + ",";
+            if(entityType.equals("Object")) {
+                String rotSymString = "";
+                String[] rotSyms = {"X", "Y", "Z"};
+                for (int i = 0; i < rotSyms.length; i++) {
+                    if (map.containsKey("RotatSym[" + i + "]") && map.get("RotatSym[" + i + "]").size() > 0 && map.get("RotatSym[" + i + "]").get(0).equals("true"))
+                        rotSymString += rotSyms[i] + ",";
+                }
+                if (rotSymString.length() > 0)
+                    rotSymString = rotSymString.substring(0, rotSymString.length() - 1);
+                RotatSym.appendChild(document.createTextNode(rotSymString));
             }
-            if(rotSymString.length()>0)
-                rotSymString = rotSymString.substring(0,rotSymString.length()-1);
-            RotatSym.appendChild(document.createTextNode(rotSymString));
             TypeA.appendChild(RotatSym);
             Element ReflSym = document.createElement("ReflSym");
-            String reflSymString = "";
-            String[] reflSyms = {"XY","YZ","XZ"};
-            for(int i = 0; i < rotSyms.length; i++) {
-                if (map.containsKey("ReflSym["+i+"]") && map.get("ReflSym["+i+"]").size() > 0 && map.get("ReflSym["+i+"]").get(0).equals("true"))
-                    reflSymString += reflSyms[i] + ",";
+            if(entityType.equals("Object")) {
+                String reflSymString = "";
+                String[] reflSyms = {"XY", "YZ", "XZ"};
+                for (int i = 0; i < reflSyms.length; i++) {
+                    if (map.containsKey("ReflSym[" + i + "]") && map.get("ReflSym[" + i + "]").size() > 0 && map.get("ReflSym[" + i + "]").get(0).equals("true"))
+                        reflSymString += reflSyms[i] + ",";
+                }
+                if (reflSymString.length() > 0)
+                    reflSymString = reflSymString.substring(0, reflSymString.length() - 1);
+                ReflSym.appendChild(document.createTextNode(reflSymString));
             }
-            if(reflSymString.length()>0)
-                reflSymString = reflSymString.substring(0,reflSymString.length()-1);
-            ReflSym.appendChild(document.createTextNode(reflSymString));
             TypeA.appendChild(ReflSym);
             Element Habitat = document.createElement("Habitat");
             root.appendChild(Habitat);
@@ -196,7 +219,7 @@ public class SaveButton extends Button {
             Habitat.appendChild(Intrinsic);
             Element Extrinsic = document.createElement("Extrinsic");
             Habitat.appendChild(Extrinsic);
-            if(map.containsKey("Intrinsic")) {
+            if(entityType.equals("Object") && map.containsKey("Intrinsic")) {
                 for (int i = 0; i < map.get("Intrinsic").size(); i++) {
                     Element Intr = document.createElement("Intr");
                     Attr Value = document.createAttribute("Value");
@@ -208,7 +231,7 @@ public class SaveButton extends Button {
                     Intrinsic.appendChild(Intr);
                 }
             }
-            if(map.containsKey("Extrinsic")) {
+            if(entityType.equals("Object") && map.containsKey("Extrinsic")) {
                 for (int i = 0; i < map.get("Extrinsic").size(); i++) {
                     Element Extr = document.createElement("Extr");
                     Attr Value = document.createAttribute("Value");
@@ -221,10 +244,8 @@ public class SaveButton extends Button {
                 }
             }
             Element Afford_Str = document.createElement("Afford_Str");
-            root.appendChild(Afford_Str);
             Element AffordancesElement = document.createElement("Affordances");
-            Afford_Str.appendChild(AffordancesElement);
-            if(map.containsKey("Affordances")) {
+            if(entityType.equals("Object") && map.containsKey("Affordances")) {
                 for (int i = 0; i < map.get("Affordances").size(); i++) {
                     Element Affordance = document.createElement("Affordance");
                     Attr Formula = document.createAttribute("Formula");
@@ -233,24 +254,30 @@ public class SaveButton extends Button {
                     AffordancesElement.appendChild(Affordance);
                 }
             }
+            Afford_Str.appendChild(AffordancesElement);
+            root.appendChild(Afford_Str);
             Element Embodiment = document.createElement("Embodiment");
             root.appendChild(Embodiment);
             Element ScaleElement = document.createElement("Scale");
-            if(map.containsKey("Scale")) {
+            if(entityType.equals("Object") && map.containsKey("Scale")) {
                 ScaleElement.appendChild(document.createTextNode(map.get("Scale").get(0)));
             }
             Embodiment.appendChild(ScaleElement);
             Element MovableElement = document.createElement("Movable");
-            if(map.containsKey("Movable")) {
+            if(entityType.equals("Object") && map.containsKey("Movable")) {
                 MovableElement.appendChild(document.createTextNode(map.get("Movable").get(0)));
+            }
+            else if(entityType.equals("Program"))
+            {
+                MovableElement.appendChild(document.createTextNode("false"));
             }
             Embodiment.appendChild(MovableElement);
             Element Args = document.createElement("Args");
-            if(map.containsKey("Args")) {
+            if(entityType.equals("Program") && map.containsKey("Args")) {
                 for (int i = 0; i < map.get("Args").size(); i++) {
                     Element Arg = document.createElement("Arg");
                     Attr Value = document.createAttribute("Value");
-                    if(!map.get("Args_index["+i+"]").get(0).equals(""))
+                    if(map.containsKey("Args_indsx["+i+"]") && !map.get("Args_index["+i+"]").get(0).equals(""))
                         Value.setValue(map.get("Args["+i+"]").get(0) + "[" + map.get("Args_index["+i+"]").get(0) + "]");
                     else
                         Value.setValue(map.get("Args["+i+"]").get(0));
@@ -260,11 +287,11 @@ public class SaveButton extends Button {
             }
             TypeA.appendChild(Args);
             Element Body = document.createElement("Body");
-            if(map.containsKey("Body")) {
+            if(entityType.equals("Program") && map.containsKey("Body")) {
                 for (int i = 0; i < map.get("Body").size(); i++) {
                     Element Subevent = document.createElement("Subevent");
                     Attr Value = document.createAttribute("Value");
-                    if(!map.get("Body_index["+i+"]").get(0).equals(""))
+                    if(map.containsKey("Body_indsx["+i+"]") && !map.get("Body_index["+i+"]").get(0).equals(""))
                         Value.setValue(map.get("Body["+i+"]").get(0) + "[" + map.get("Body_index["+i+"]").get(0) + "]");
                     else
                         Value.setValue(map.get("Body["+i+"]").get(0));
@@ -309,5 +336,15 @@ public class SaveButton extends Button {
         } catch (TransformerException tfe) {
             tfe.printStackTrace();
         }
+    }
+
+    public AnnotationComponent searchComponent(String key)
+    {
+        for(AnnotationComponent comp : componentSet)
+        {
+            if(comp.getKey() != null && comp.getKey().equals(key))
+                return comp;
+        }
+        return null;
     }
 }

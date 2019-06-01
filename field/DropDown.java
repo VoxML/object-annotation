@@ -3,6 +3,7 @@ package field;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class DropDown extends AnnotationField {
@@ -80,6 +81,15 @@ public class DropDown extends AnnotationField {
         dropdown = result;
         updateLocation();
         return dropdown;
+    }
+
+    public ArrayList<String> getValueStrings()
+    {
+        String value = (String) dropdown.getSelectedItem();
+        valueStrings.clear();
+        valueStrings.add(value);
+        map.put(key, valueStrings);
+        return valueStrings;
     }
 
     public String toString()

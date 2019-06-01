@@ -87,14 +87,20 @@ public class CheckBox extends AnnotationField {
         return result;
     }
 
+    public ArrayList<String> getValueStrings() {
+        String value;
+        if(checkbox.isSelected())
+            value = "true";
+        else
+            value = "false";
+        valueStrings.clear();
+        valueStrings.add(value);
+        map.put(key, valueStrings);
+        return valueStrings;
+    }
+
     public String toString()
     {
         return "Checkbox with key " + key;
     }
-
-    public ArrayList<String> getValueStrings()
-    {
-        return valueStrings;
-    }
-
 }

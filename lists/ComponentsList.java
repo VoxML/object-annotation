@@ -88,6 +88,8 @@ public class ComponentsList extends TextFieldList {
         }
     }
 
+    public LinkedList<CheckBox> getConcavity() {return concavity; }
+
     public void remove(int index)
     {
         super.remove(index);
