@@ -126,21 +126,6 @@ public class Main extends JFrame {
                 "Object", this, tabs);
         SaveButton Save = new SaveButton(null,null,new Rectangle(460,20,100,25),(JPanel)objectPanel,map,set1, "Object");
 
-        buttons.Button temp = new buttons.Button("map", null, null, new Rectangle(500, 400, 90, 40), (JPanel) objectPanel,
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        System.out.println("MAP:");
-                        if(map != null)
-                        {
-                            for(String key : map.keySet())
-                            {
-                                System.out.println(key + ": " + map.get(key));
-                            }
-                        }
-                    }
-                }, null);
-
         while(bar.getAdjustmentListeners().length>0)
             bar.removeAdjustmentListener(bar.getAdjustmentListeners()[0]);
         for(AnnotationComponent comp : set1)
