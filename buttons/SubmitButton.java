@@ -1,23 +1,19 @@
 package buttons;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class SubmitButton implements ActionListener, KeyListener {
 
-    JTextField input;
-    field.TextField textField;
+    private JTextField input;
+    private field.TextField textField;
 
     public SubmitButton(field.TextField textField) {
         this.textField = textField;
-        this.input = textField.textfield;
+        this.input = textField.getTextfield();
     }
 
     @Override
@@ -43,15 +39,18 @@ public class SubmitButton implements ActionListener, KeyListener {
     }
 
     private void submit(){
-        String value = (String) input.getText();
-        textField.valueStrings.clear();
-        textField.valueStrings.add(value);
-        textField.map.put(textField.key, textField.valueStrings);
-        if(textField.key.equals("Pred"))
+        String value = input.getText();
+        textField.getValueStrings().clear();
+        textField.getValueStrings().add(value);
+        textField.getMap().put(textField.getKey(), textField.getValueStrings());
+        if(textField.getKey().equals("Pred"))
         {
-            if(textField.frame != null) {
-               textField.frame.setTitle(input.getText());
+            if(textField.getFrame() != null) {
+               textField.getFrame().setTitle(input.getText());
             }
         }
     }
+
+    public JTextField getInput() { return input; }
+    public field.TextField getTextField() { return textField; }
 }

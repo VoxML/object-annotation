@@ -3,62 +3,46 @@ package field;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class DropDown extends AnnotationField {
-    public JComboBox dropdown;
-    public String[] options;
+    private JComboBox dropdown;
+    private String[] options;
 
-    public DropDown(String key, String[] options, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
+    public DropDown(String key, String[] options, Rectangle bounds, AnnotationComponent prev,
                     JPanel panel, HashMap<String, ArrayList<String>> map, HashSet<AnnotationComponent> set)
     {
         super(set);
-        this.set = set;
-        if(!set.contains(this))
-            set.add(this);
+        this.setSet(set);
+        set.add(this);
         this.key = key;
         this.bounds = bounds;
-        this.panel = panel;
+        this.setPanel(panel);
         this.map = map;
-        this.prev = prev;
+        this.setPrev(prev);
         this.options = options;
         if(map != null)
         {
-            valueStrings.clear();
+            super.getValueStrings().clear();
             if(options.length>0)
-                valueStrings.add(options[0]);
-            map.put(key, valueStrings);
+                super.getValueStrings().add(options[0]);
+            map.put(key, super.getValueStrings());
         }
         createDropdown(bounds, options);
     }
 
-    public DropDown(String key, String[] options, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, HashSet<AnnotationComponent> set)
-    {
-        super(set);
-        this.set = set;
-        if(!set.contains(this))
-            set.add(this);
-        this.key = key;
-        this.bounds = bounds;
-        this.panel = panel;
-        this.map = map;
-        createDropdown(bounds, options);
-    }
-
-
     public void updateLocation()
     {
         super.updateLocation();
-        if(dropdown != null && bounds != null)
-            dropdown.setBounds(bounds);
+        if(getDropdown() != null && bounds != null)
+            getDropdown().setBounds(bounds);
     }
 
     protected void setHeight(int newHeight)
     {
         super.setHeight(newHeight);
-        if(dropdown != null && bounds != null)
-            dropdown.setBounds(bounds);
+        if(getDropdown() != null && bounds != null)
+            getDropdown().setBounds(bounds);
     }
 
     public JComboBox createDropdown(Rectangle dropdownBounds, String[] dropdownOptions)
@@ -70,30 +54,38 @@ public class DropDown extends AnnotationField {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         String value = (String) result.getSelectedItem();
-                        valueStrings.clear();
-                        valueStrings.add(value);
-                        map.put(key, valueStrings);
+                        getValueStrings().clear();
+                        getValueStrings().add(value);
+                        getMap().put(getKey(), getValueStrings());
                     }
                 }
         );
         result.setVisible(true);
-        panel.add(result);
+        getPanel().add(result);
         dropdown = result;
         updateLocation();
-        return dropdown;
+        return getDropdown();
     }
 
     public ArrayList<String> getValueStrings()
     {
-        String value = (String) dropdown.getSelectedItem();
-        valueStrings.clear();
-        valueStrings.add(value);
-        map.put(key, valueStrings);
-        return valueStrings;
+        String value = (String) getDropdown().getSelectedItem();
+        super.getValueStrings().clear();
+        super.getValueStrings().add(value);
+        getMap().put(getKey(), super.getValueStrings());
+        return super.getValueStrings();
     }
 
     public String toString()
     {
-        return "Dropdown with key " + key;
+        return "Dropdown with key " + getKey();
+    }
+
+    public JComboBox getDropdown() {
+        return dropdown;
+    }
+
+    public String[] getOptions() {
+        return options;
     }
 }
