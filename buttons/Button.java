@@ -5,60 +5,42 @@ import field.AnnotationComponent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Button extends AnnotationComponent {
-    public String name;
-    public JButton button;
-    public ActionListener AL;
-
-    public Button(HashSet<AnnotationComponent> set)
-    {super(set);}
+    private String name;
+    private JButton button;
+    private ActionListener AL;
 
     public Button() {    }
 
-    public Button(String name, AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, JPanel panel, ActionListener AL,
+    public Button(String name, AnnotationComponent prev, Rectangle bounds, JPanel panel, ActionListener AL,
                   HashSet<AnnotationComponent> set)
     {
         super(set);
-        this.set = set;
+        this.setSet(set);
         if(set != null)
             set.add(this);
-        this.name = name;
-        this.prev = prev;
+        this.setName(name);
+        this.setPrev(prev);
         this.bounds = bounds;
-        this.panel = panel;
-        button = createButton(name, this.bounds, AL);
-        updateLocation();
-    }
-
-    public Button(String name, Rectangle bounds, JPanel panel, ActionListener AL, HashSet<AnnotationComponent> set)
-    {
-        super(set);
-        this.set = set;
-        if(!set.contains(this))
-            set.add(this);
-        this.name = name;
-        this.prev = null;
-        this.bounds = bounds;
-        this.panel = panel;
-        button = createButton(name, this.bounds, AL);
+        this.setPanel(panel);
+        setButton(createButton(name, this.bounds, AL));
         updateLocation();
     }
 
     public void updateLocation()
     {
         super.updateLocation();
-        if(button != null && bounds!=null)
-            button.setBounds(bounds);
+        if(getButton() != null && bounds!=null)
+            getButton().setBounds(bounds);
     }
 
     protected void setHeight(int newHeight)
     {
         super.setHeight(newHeight);
-        if(button!=null && bounds != null)
-            button.setBounds(bounds);
+        if(getButton() !=null && bounds != null)
+            getButton().setBounds(bounds);
     }
 
     public String getKey()
@@ -67,18 +49,44 @@ public class Button extends AnnotationComponent {
     }
 
     protected JButton createButton(String name, Rectangle buttonBounds, ActionListener AL) {
-        button = new JButton(name);
-        this.AL = AL;
-        button.addActionListener(AL);
-        button.setBounds(buttonBounds);
-        button.setVisible(true);
-        panel.add(button);
+        setButton(new JButton(name));
+        this.setAL(AL);
+        getButton().setBounds(buttonBounds);
+        getButton().setVisible(true);
+        getPanel().add(getButton());
         updateLocation();
-        return button;
+        return getButton();
     }
 
     public String toString()
     {
-        return "Button with name " + name;
+        return "Button with name " + getName();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public JButton getButton() {
+        return button;
+    }
+
+    public void setButton(JButton button) {
+        this.button = button;
+    }
+
+    public ActionListener getAL() {
+        return AL;
+    }
+
+    public void setAL(ActionListener AL) {
+        this.AL = AL;
+        while(getButton().getActionListeners().length>0)
+            getButton().removeActionListener(getButton().getActionListeners()[0]);
+        getButton().addActionListener(AL);
     }
 }

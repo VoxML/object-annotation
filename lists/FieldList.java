@@ -5,19 +5,17 @@ import buttons.RemoveButton;
 import field.AnnotationComponent;
 import field.AnnotationField;
 import field.TextField;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 
 public class FieldList<E extends AnnotationField> extends AnnotationField
 {
-    public LinkedList<E> list;
-    public LinkedList<RemoveButton> remove;
-    public AddButton add;
+    protected LinkedList<E> list;
+    protected LinkedList<RemoveButton> remove;
+    protected AddButton add;
     protected LinkedList<TextField> indices;
-    protected String value;
-    public ArrayList<String> valueStrings;
+    protected ArrayList<String> valueStrings;
     protected boolean removeBool;
     protected boolean indexBool;
     protected int max;
@@ -25,22 +23,20 @@ public class FieldList<E extends AnnotationField> extends AnnotationField
     protected int size;
 
     public FieldList(String key, Rectangle bounds, boolean removeBool, boolean indexBool, int max, int min, JPanel panel,
-                     HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev, AnnotationComponent next,
-                     HashSet<AnnotationComponent> set)
+                     HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev, HashSet<AnnotationComponent> set)
     {
         super(set,key,bounds);
-        this.set = set;
-        if(!set.contains(this))
-            set.add(this);
+        this.setSet(set);
+        set.add(this);
         this.list = new LinkedList<E>();
         this.bounds = bounds;
         this.removeBool = removeBool;
         this.indexBool = indexBool;
-        this.prev = prev;
+        this.setPrev(prev);
         this.max = max;
         this.min = min;
         this.size = min;
-        this.panel = panel;
+        this.setPanel(panel);
         this.map = map;
         if(add != null)
             add.setList(this);
@@ -49,13 +45,23 @@ public class FieldList<E extends AnnotationField> extends AnnotationField
     }
     public void updateLocation() {
         super.updateLocation();
-        if (list != null && list.size() > 0) {
-            list.get(0).updateLocation();
-            if (list.get(0).prev != null)
-                list.get(0).prev.updateLocation();
+        if (getList() != null && getList().size() > 0) {
+            getList().get(0).updateLocation();
+            if (getList().get(0).getPrev() != null)
+                getList().get(0).getPrev().updateLocation();
         }
-        if(map != null)
-            map.put(key,getValueStrings());
+        if (getIndices() != null && getIndices().size() >  0) {
+            getIndices().get(0).updateLocation();
+            if (getIndices().get(0).getPrev() != null)
+                getIndices().get(0).getPrev().updateLocation();
+        }
+        if (getRemove() != null && getRemove().size() >  0) {
+            getRemove().get(0).updateLocation();
+            if (getRemove().get(0).getPrev() != null)
+                getRemove().get(0).getPrev().updateLocation();
+        }
+        if(getMap() != null)
+            getMap().put(getKey(),getValueStrings());
     }
     public void add() {
         System.out.println("add method: To be implemented in subclasses.");
@@ -76,4 +82,19 @@ public class FieldList<E extends AnnotationField> extends AnnotationField
     {
         return valueStrings;
     }
+
+    public LinkedList<RemoveButton> getRemove() {
+        return remove;
+    }
+
+    public AddButton getAdd() {
+        return add;
+    }
+
+    public void setAdd(AddButton add) { this.add = add; }
+
+    public LinkedList<TextField> getIndices() {
+        return indices;
+    }
+
 }

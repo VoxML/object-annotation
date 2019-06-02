@@ -4,20 +4,19 @@ import java.awt.*;
 import java.util.*;
 
 public class AnnotationField<T> extends AnnotationComponent {
-    public String key;
-    public ArrayList<String> valueStrings = new ArrayList<String>();
-    public HashMap<String, ArrayList<String>> map;
+    protected String key;
+    protected ArrayList<String> valueStrings = new ArrayList<String>();
+    protected HashMap<String, ArrayList<String>> map;
 
     public AnnotationField(HashSet<AnnotationComponent> set)
     {
         super(set);
-        this.set = set;
-        if(!set.contains(this))
-            set.add(this);
+        this.setSet(set);
+        set.add(this);
         this.key = null;
         this.bounds = null;
-        this.prev = null;
-        this.panel = null;
+        this.setPrev(null);
+        this.setPanel(null);
         this.map = null;
         updateLocation();
     }
@@ -25,9 +24,8 @@ public class AnnotationField<T> extends AnnotationComponent {
     public AnnotationField(HashSet<AnnotationComponent> set, String key, Rectangle bounds)
     {
         super(set);
-        this.set = set;
-        if(!set.contains(this))
-            set.add(this);
+        this.setSet(set);
+        set.add(this);
         this.key = key;
         this.bounds = bounds;
         updateLocation();
@@ -36,15 +34,6 @@ public class AnnotationField<T> extends AnnotationComponent {
     public void updateLocation()
     {
         super.updateLocation();
-        /*
-        if(map != null) {
-            if (map.containsKey("Intrinsic"))
-                map.put("Intr", map.get("Intrinsic"));
-            if (map.containsKey("Extrinsic"))
-                map.put("Extr", map.get("Extrinsic"));
-            map.put("Habitat", null);
-        }
-        */
     }
 
     public String getKey()
@@ -67,4 +56,7 @@ public class AnnotationField<T> extends AnnotationComponent {
         this.valueStrings = valueStrings;
     } //to be overridden by each field
 
+    public HashMap<String, ArrayList<String>> getMap() {
+        return map;
+    }
 }

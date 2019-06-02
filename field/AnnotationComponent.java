@@ -3,40 +3,38 @@ package field;
 import lists.FieldList;
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class AnnotationComponent {
     //includes buttons as well as fields
-    public Rectangle bounds;
-    public AnnotationComponent prev; //vertically previous component
-    public JPanel panel;
-    public HashSet<AnnotationComponent> set;
-    public boolean moved;
-    public JScrollBar verticalBar;
-    public int indicator;
+    protected Rectangle bounds;
+    protected AnnotationComponent prev; //vertically previous component
+    protected JPanel panel;
+    protected HashSet<AnnotationComponent> set;
+    protected boolean moved;
+    protected JScrollBar verticalBar;
+    protected int indicator;
 
     public AnnotationComponent()
     {    }
 
     public AnnotationComponent(HashSet<AnnotationComponent> set)
     {
-        this.set = set;
+        this.setSet(set);
         if(set != null) {
-            if(!set.contains(this))
-               set.add(this);
+            set.add(this);
         }
-        moved = false;
+        setMoved(false);
     }
 
     public void updateLocation(int gapSize, boolean fixLists, Queue<AnnotationComponent> q)
     {
-        if(set != null)
+        if(getSet() != null)
         {
             if(fixLists) {
-                for (AnnotationComponent comp : set) {
+                for (AnnotationComponent comp : getSet()) {
                     if (comp instanceof FieldList) {
                         if (((FieldList) comp).getList() != null && ((FieldList) comp).getList().size() > 0) {
                             comp.setHeight((int) (((AnnotationComponent) ((FieldList) (comp)).getList().getLast()).bounds.getY()));
@@ -45,25 +43,25 @@ public class AnnotationComponent {
                 }
             }
 
-            if (!this.moved) {
-                if ((!(this instanceof FieldList)) && this.prev != null && this.prev.bounds != null) {
-                    this.setHeight((int) this.prev.bounds.getY() + this.prev.bounds.height + gapSize);
+            if (!this.isMoved()) {
+                if ((!(this instanceof FieldList)) && this.getPrev() != null && this.getPrev().bounds != null) {
+                    this.setHeight((int) this.getPrev().bounds.getY() + this.getPrev().bounds.height + gapSize);
                 }
 
-                for (AnnotationComponent comp : set) {
+                for (AnnotationComponent comp : getSet()) {
                     if (!comp.equals(this)) {
-                        if (comp.prev != null && comp.prev.equals(this) && this.bounds != null) {
+                        if (comp.getPrev() != null && comp.getPrev().equals(this) && this.bounds != null) {
                             q.add(comp);
                         }
                     }
                 }
-                this.moved = true;
+                this.setMoved(true);
             }
         }
-        if(set != null && panel != null) {
+        if(getSet() != null && getPanel() != null) {
             AnnotationComponent last = this;
             int maxHeight = 0;
-            for (AnnotationComponent comp : set) {
+            for (AnnotationComponent comp : getSet()) {
                 if (comp.bounds != null) {
                     if (comp.bounds.y > maxHeight) {
                         maxHeight = comp.bounds.y;
@@ -73,43 +71,44 @@ public class AnnotationComponent {
             }
             if (last != null) {
                 if (last.bounds != null) {
-                    panel.setBounds(0, 0, 600, last.bounds.y + last.bounds.height + 20);
-                    panel.setPreferredSize(new Dimension(600, last.bounds.y + last.bounds.height + 20));
-                    panel.validate();
+                    getPanel().setBounds(0, 0, 600, last.bounds.y + last.bounds.height + 20);
+                    getPanel().setPreferredSize(new Dimension(600, last.bounds.y + last.bounds.height + 20));
+                    getPanel().validate();
                 }
             }
         }
     }
 
     public void updateLocationPrev() {
-        this.indicator = 0;
+        this.setIndicator(0);
         Rectangle rect = null;
-        if(panel != null)
-            rect = panel.getVisibleRect();
+        if(getPanel() != null)
+            rect = getPanel().getVisibleRect();
         Rectangle rect1 = rect;
         Queue<AnnotationComponent> q = new LinkedList<AnnotationComponent>();
         q.add(this);
         while(!q.isEmpty())
         {
-            if(q.peek().indicator == 0 && q.peek() instanceof TextField && ((TextField)q.peek()).textfield != null && !((TextField)q.peek()).justCreated)
+            if(q.peek().getIndicator() == 0 && q.peek() instanceof TextField && ((TextField) q.peek()).getTextfield() != null &&
+                    (!(((TextField) (q.peek())).getTextfield().getText().equals("")) || ((TextField) q.peek()).isHasBeenChanged()))
                 ((TextField) q.peek()).pressEnter();
             q.remove().updateLocation(10,true,q);
         }
-        if(set != null) {
-            for (AnnotationComponent comp : set) {
-                comp.moved = false;
+        if(getSet() != null) {
+            for (AnnotationComponent comp : getSet()) {
+                comp.setMoved(false);
             }
         }
-        if(panel != null) {
-            panel.scrollRectToVisible(rect1);
+        if(getPanel() != null) {
+            getPanel().scrollRectToVisible(rect1);
         }
-        this.indicator=1;
+        this.setIndicator(1);
     }
 
     public void updateLocation()
     {
-        if(prev != null)
-            prev.updateLocationPrev();
+        if(getPrev() != null)
+            getPrev().updateLocationPrev();
         else
             this.updateLocationPrev();
     }
@@ -140,5 +139,41 @@ public class AnnotationComponent {
     public Rectangle getBounds()
     {
         return bounds;
+    }
+
+    public JPanel getPanel() {
+        return panel;
+    }
+
+    public void setPanel(JPanel panel) {
+        this.panel = panel;
+    }
+
+    public HashSet<AnnotationComponent> getSet() {
+        return set;
+    }
+
+    public void setSet(HashSet<AnnotationComponent> set) {
+        this.set = set;
+    }
+
+    public boolean isMoved() {
+        return moved;
+    }
+
+    public void setMoved(boolean moved) {
+        this.moved = moved;
+    }
+
+    public JScrollBar getVerticalBar() {
+        return verticalBar;
+    }
+
+    public int getIndicator() {
+        return indicator;
+    }
+
+    public void setIndicator(int indicator) {
+        this.indicator = indicator;
     }
 }

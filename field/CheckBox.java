@@ -9,56 +9,42 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class CheckBox extends AnnotationField {
-    public String name;
-    public JCheckBox checkbox;
+    private String name;
+    private JCheckBox checkbox;
 
-    public CheckBox(String key, String name, Rectangle bounds, AnnotationComponent prev, AnnotationComponent next,
+    public CheckBox(String key, String name, Rectangle bounds, AnnotationComponent prev,
                     JPanel panel, HashMap<String, ArrayList<String>> map, HashSet<AnnotationComponent> set)
     {
         super(set);
         this.name = name;
-        this.set = set;
-        if(!set.contains(this))
-            set.add(this);
+        this.setSet(set);
+        set.add(this);
         this.key = key;
         this.bounds = bounds;
-        this.panel = panel;
+        this.setPanel(panel);
         this.map = map;
-        this.prev = prev;
+        this.setPrev(prev);
         createCheckBox(name, bounds);
         if(map != null)
         {
-            valueStrings.clear();
-            valueStrings.add("false");
-            map.put(key, valueStrings);
+            super.getValueStrings().clear();
+            super.getValueStrings().add("false");
+            map.put(key, super.getValueStrings());
         }
-    }
-
-    public CheckBox(String key, String name, Rectangle bounds, JPanel panel, HashMap<String, ArrayList<String>> map, HashSet<AnnotationComponent> set)
-    {
-        super(set);
-        this.set = set;
-        if(!set.contains(this))
-            set.add(this);
-        this.key = key;
-        this.bounds = bounds;
-        this.panel = panel;
-        this.map = map;
-        createCheckBox(name, bounds);
     }
 
     public void updateLocation()
     {
         super.updateLocation();
-        if(checkbox != null && bounds!=null)
-            checkbox.setBounds(bounds);
+        if(getCheckbox() != null && bounds!=null)
+            getCheckbox().setBounds(bounds);
     }
 
     protected void setHeight(int newHeight)
     {
         super.setHeight(newHeight);
-        if(checkbox != null && bounds!=null)
-            checkbox.setBounds(bounds);
+        if(getCheckbox() != null && bounds!=null)
+            getCheckbox().setBounds(bounds);
     }
 
     public JCheckBox createCheckBox(String name, Rectangle checkboxBounds)
@@ -74,14 +60,14 @@ public class CheckBox extends AnnotationField {
                             value = "true";
                         else
                             value = "false";
-                        valueStrings.clear();
-                        valueStrings.add(value);
-                        map.put(key, valueStrings);
+                        getValueStrings().clear();
+                        getValueStrings().add(value);
+                        getMap().put(getKey(), getValueStrings());
                     }
                 }
         );
         result.setVisible(true);
-        panel.add(result);
+        getPanel().add(result);
         checkbox = result;
         updateLocation();
         return result;
@@ -89,18 +75,26 @@ public class CheckBox extends AnnotationField {
 
     public ArrayList<String> getValueStrings() {
         String value;
-        if(checkbox.isSelected())
+        if(getCheckbox().isSelected())
             value = "true";
         else
             value = "false";
-        valueStrings.clear();
-        valueStrings.add(value);
-        map.put(key, valueStrings);
-        return valueStrings;
+        super.getValueStrings().clear();
+        super.getValueStrings().add(value);
+        getMap().put(getKey(), super.getValueStrings());
+        return super.getValueStrings();
     }
 
     public String toString()
     {
-        return "Checkbox with key " + key;
+        return "Checkbox with key " + getKey();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public JCheckBox getCheckbox() {
+        return checkbox;
     }
 }

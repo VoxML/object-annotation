@@ -6,26 +6,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class RemoveButton extends Button {
-    protected FieldList list;
-    protected int index;
+    private FieldList list;
+    private int index;
 
-    public RemoveButton(AnnotationComponent prev, AnnotationComponent next, Rectangle bounds, FieldList list, int index, JPanel panel,
+    public RemoveButton(AnnotationComponent prev, Rectangle bounds, FieldList list, int index, JPanel panel,
                         HashSet<AnnotationComponent> set)
     {
-        super("remove", prev, next, bounds, panel, new ActionListener() {
+        super("remove", prev, bounds, panel, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 list.remove(index);
             }
         }, set);
-        this.set = set;
-        if(!set.contains(this))
-            set.add(this);
-        this.list = list;
+        this.setSet(set);
+        set.add(this);
+        this.setList(list);
         this.index = index;
     }
 
@@ -34,34 +32,27 @@ public class RemoveButton extends Button {
         super.updateLocation();
     }
 
-    public JButton createButton(Rectangle buttonBounds) {
-        this.AL = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int ind = getIndex();
-                list.remove(ind);
-            }
-        };
-        JButton result = super.createButton("remove", buttonBounds, this.AL);
-        this.button = result;
-        return result;
-    }
-
     public void upadteActionListener()
     {
-        this.AL = new ActionListener() {
+        this.setAL(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int ind = getIndex();
-                list.remove(ind);
+                getList().remove(ind);
             }
-        };
-        while(button.getActionListeners().length>0)
-            button.removeActionListener(button.getActionListeners()[0]);
-        button.addActionListener(this.AL);
+        });
+        while(getButton().getActionListeners().length>0)
+            getButton().removeActionListener(getButton().getActionListeners()[0]);
+        getButton().addActionListener(this.getAL());
 
     }
 
     public void setIndex(int index) {this.index = index; upadteActionListener(); }
     public int getIndex() {return index; }
+    public FieldList getList() {
+        return list;
+    }
+    public void setList(FieldList list) {
+        this.list = list;
+    }
 }

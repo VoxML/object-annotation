@@ -15,18 +15,18 @@ import java.util.*;
 
 public class Main extends JFrame {
 
-    static String[] possibleHeads = {"", "prismatoid", "pyramid", "wedge", "parallelepiped", "cupola", "frustum",
+    private static String[] possibleHeads = {"", "prismatoid", "pyramid", "wedge", "parallelepiped", "cupola", "frustum",
             "cylindroid", "ellipsoid", "hemiellipsoid", "bipyramid", "rectangular prism", "toroid", "sheet"};
-    static String[] possibleTypes = {"","physobj","artifact","human"};
-    static String[] possibleScales = {"<agent","=agent",">agent"};
-    static String[] possibleEventHeads = {"","process","transition_event"};
-    static String[] possibleEventTypes = {"","state","process","transition assignment","test"};
+    private static String[] possibleTypes = {"","physobj","artifact","human"};
+    private static String[] possibleScales = {"<agent","=agent",">agent"};
+    private static String[] possibleEventHeads = {"","process","transition_event"};
+    private static String[] possibleEventTypes = {"","state","process","transition assignment","test"};
 
-    static HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
-    static HashSet<AnnotationComponent> set1 = new HashSet<AnnotationComponent>(); //to update location when things shift for object view
-    static HashSet<AnnotationComponent> set2 = new HashSet<AnnotationComponent>(); //to update location when things shift for event view
+    private static HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+    private static HashSet<AnnotationComponent> set1 = new HashSet<AnnotationComponent>(); //to update location when things shift for object view
+    private static HashSet<AnnotationComponent> set2 = new HashSet<AnnotationComponent>(); //to update location when things shift for event view
 
-    static JTabbedPane tabs;
+    private static JTabbedPane tabs;
 
     public Main() {
         init();
@@ -52,79 +52,79 @@ public class Main extends JFrame {
         set1.clear();
 
         field.Label NameLabel = new field.Label(set1,"Name: ", new Rectangle(15, 20, 85, 25),
-                null, null, (JPanel) objectPanel);
+                null, (JPanel) objectPanel);
         field.TextField Name = new field.TextField("Pred", new Rectangle(110, 20, 120, 25),
-                null, null, (JPanel) objectPanel, map, set1);
+                null, (JPanel) objectPanel, map, set1);
         addNameFunctionality(Name);
         field.Label HeadLabel = new field.Label(set1,"Head: ", new Rectangle(15, 20, 85, 25),
-                NameLabel, null, (JPanel) objectPanel);
+                NameLabel, (JPanel) objectPanel);
         field.DropDown Head = new field.DropDown("Head", possibleHeads, new Rectangle(110,20,120,
-                25), Name, null, (JPanel)objectPanel, map, set1);
-        field.TextField HeadIndex = new field.TextField("Head_index",new Rectangle(240,20,50,25),NameLabel,null,
+                25), Name, (JPanel)objectPanel, map, set1);
+        field.TextField HeadIndex = new field.TextField("Head_index",new Rectangle(240,20,50,25),NameLabel,
                 (JPanel)objectPanel,map,set1);
         field.Label TypeLabel = new field.Label(set1, "Type: ", new Rectangle(15, 20, 85, 25),
-                HeadLabel, null, (JPanel) objectPanel);
+                HeadLabel, (JPanel) objectPanel);
         DropDownList Types = new DropDownList("Type", new Rectangle(110,20,100,25),true,false,
-                3,0,(JPanel)objectPanel,map,null,possibleTypes,Head,null, set1);
-        AddButton addType = new AddButton(Head, null, new Rectangle(350,20,100,25),Types,(JPanel)objectPanel,set1);
+                3,0,(JPanel)objectPanel,map,null,possibleTypes, Head, set1);
+        AddButton addType = new AddButton(Head, new Rectangle(350,20,100,25),Types,(JPanel)objectPanel,set1);
         field.Label ComponentsLabel = new field.Label(set1,"Components: ", new Rectangle(15, 20, 100, 25),
-                Types,null,(JPanel)objectPanel);
+                Types,(JPanel)objectPanel);
         ComponentsList Components = new ComponentsList("Components", new Rectangle(50, 20, 100, 25), true, true,
-                (JPanel)objectPanel,map,null,ComponentsLabel,null,set1);
-        AddButton addComponent = new AddButton(Types,null,new Rectangle(350,20,100,25),Components,(JPanel)objectPanel,set1);
+                (JPanel)objectPanel,map,null,ComponentsLabel,set1);
+        AddButton addComponent = new AddButton(Types,new Rectangle(350,20,100,25),Components,(JPanel)objectPanel,set1);
         Components.getConcavityStrings();
         field.Label RotSymLabel = new field.Label(set1,"Rotational symmetry: ", new Rectangle(15, 20, 200, 25),
-                Components,null,(JPanel)objectPanel);
+                Components,(JPanel)objectPanel);
         field.CheckBox rotationalSymmetryX = new field.CheckBox("RotatSym[0]","X",new Rectangle(30,20,35,25),RotSymLabel,
-                null,(JPanel)objectPanel,map,set1);
+                (JPanel)objectPanel,map,set1);
         field.CheckBox rotationalSymmetryY = new field.CheckBox("RotatSym[1]","Y",new Rectangle(100,20,35,25),RotSymLabel,
-                null,(JPanel)objectPanel,map,set1);
+                (JPanel)objectPanel,map,set1);
         field.CheckBox rotationalSymmetryZ = new field.CheckBox("RotatSym[2]","Z",new Rectangle(170,20,35,25),RotSymLabel,
-                null,(JPanel)objectPanel,map,set1);
+                (JPanel)objectPanel,map,set1);
         field.Label ReflSymLabel = new field.Label(set1,"Reflection symmetry: ", new Rectangle(15, 20, 200, 25),
-                rotationalSymmetryX,null,(JPanel)objectPanel);
+                rotationalSymmetryX,(JPanel)objectPanel);
         field.CheckBox reflectionSymmetryXY = new field.CheckBox("ReflSym[0]","XY",new Rectangle(30,20,45,25),ReflSymLabel,
-                null,(JPanel)objectPanel,map,set1);
+                (JPanel)objectPanel,map,set1);
         field.CheckBox reflectionSymmetryYZ = new field.CheckBox("ReflSym[1]","YZ",new Rectangle(110,20,45,25),ReflSymLabel,
-                null,(JPanel)objectPanel,map,set1);
+                (JPanel)objectPanel,map,set1);
         field.CheckBox reflectionSymmetryXZ = new field.CheckBox("ReflSym[2]","XZ",new Rectangle(190,20,45,25),ReflSymLabel,
-                null,(JPanel)objectPanel,map,set1);
+                (JPanel)objectPanel,map,set1);
         field.Label HabitatsLabel = new field.Label(set1,"Habitats: ", new Rectangle(15, 20, 100, 25),
-                reflectionSymmetryXY,null,(JPanel)objectPanel);
+                reflectionSymmetryXY,(JPanel)objectPanel);
         field.Label IntrinsicNameLabel = new field.Label(set1,"name: ", new Rectangle(110, 20, 100, 25),
-                HabitatsLabel,null,(JPanel)objectPanel);
+                HabitatsLabel,(JPanel)objectPanel);
         field.Label IntrinsicValueLavel = new field.Label(set1,"value: ", new Rectangle(195, 20, 100, 25),
-                HabitatsLabel,null,(JPanel)objectPanel);
+                HabitatsLabel,(JPanel)objectPanel);
         field.Label IntrinsicLabel = new field.Label(set1,"Intrinsic: ", new Rectangle(30, 20, 100, 25),
-                HabitatsLabel,null,(JPanel)objectPanel);
+                HabitatsLabel,(JPanel)objectPanel);
         TextFieldList Intrinsic = new TextFieldList("Intrinsic", new Rectangle(110,20,80,25),true,true,
-                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,IntrinsicLabel,null,set1);
-        AddButton addIntrinsic = new AddButton(HabitatsLabel,null,new Rectangle(350,20,100,25),Intrinsic,(JPanel)objectPanel,set1);
+                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,IntrinsicLabel,set1);
+        AddButton addIntrinsic = new AddButton(HabitatsLabel,new Rectangle(350,20,100,25),Intrinsic,(JPanel)objectPanel,set1);
         field.Label ExtrinsicNameLabel = new field.Label(set1,"name: ", new Rectangle(110, 20, 100, 25),
-                Intrinsic,null,(JPanel)objectPanel);
+                Intrinsic,(JPanel)objectPanel);
         field.Label ExtrinsicValueLabel = new field.Label(set1,"value: ", new Rectangle(195, 20, 100, 25),
-                Intrinsic,null,(JPanel)objectPanel);
+                Intrinsic,(JPanel)objectPanel);
         field.Label ExtrinsicLabel = new field.Label(set1,"Extrinsic: ", new Rectangle(30, 20, 100, 25),
-                Intrinsic,null,(JPanel)objectPanel);
+                Intrinsic,(JPanel)objectPanel);
         TextFieldList Extrinsic = new TextFieldList("Extrinsic", new Rectangle(110,20,80,25),true,true,
-                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,ExtrinsicLabel,null,set1);
-        AddButton addExtrinsic = new AddButton(Intrinsic,null,new Rectangle(350,20,100,25),Extrinsic,(JPanel)objectPanel,set1);
+                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,ExtrinsicLabel,set1);
+        AddButton addExtrinsic = new AddButton(Intrinsic,new Rectangle(350,20,100,25),Extrinsic,(JPanel)objectPanel,set1);
         field.Label AffordancesLabel = new field.Label(set1,"Affordances: ", new Rectangle(15, 20, 120, 25),
-                Extrinsic,null,(JPanel)objectPanel);
+                Extrinsic,(JPanel)objectPanel);
         TextFieldList Affordances = new TextFieldList("Affordances", new Rectangle(15,20,200,25),true,false,
-                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,AffordancesLabel,null,set1);
-        AddButton addAffordance = new AddButton(Extrinsic,null,new Rectangle(350,20,100,25),Affordances,(JPanel)objectPanel,set1);
+                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,AffordancesLabel,set1);
+        AddButton addAffordance = new AddButton(Extrinsic, new Rectangle(350,20,100,25),Affordances,(JPanel)objectPanel,set1);
         field.Label ScaleLabel = new field.Label(set1,"Scale: ", new Rectangle(15, 20, 70, 25),
-                Affordances,null,(JPanel)objectPanel);
-        field.DropDown Scale = new field.DropDown("Scale",possibleScales, new Rectangle(90,20,100,25),Affordances,null,
+                Affordances,(JPanel)objectPanel);
+        field.DropDown Scale = new field.DropDown("Scale",possibleScales, new Rectangle(90,20,100,25),Affordances,
                 (JPanel)objectPanel,map,set1);
         field.Label MovableLabel = new field.Label(set1,"Movable? ", new Rectangle(15, 20, 70, 25),
-                Scale,null,(JPanel)objectPanel);
-        field.CheckBox Movable = new field.CheckBox("Movable","",new Rectangle(90,20,22,25),Scale,null,
+                Scale,(JPanel)objectPanel);
+        field.CheckBox Movable = new field.CheckBox("Movable","",new Rectangle(90,20,22,25),Scale,
                 (JPanel)objectPanel,map,set1);
-        LoadButton Load = new LoadButton(null,null,new Rectangle(350,20,100,25),(JPanel)objectPanel,map,set1,
+        LoadButton Load = new LoadButton(null, new Rectangle(350,20,100,25),(JPanel)objectPanel,map,set1,
                 "Object", this, tabs);
-        SaveButton Save = new SaveButton(null,null,new Rectangle(460,20,100,25),(JPanel)objectPanel,map,set1, "Object");
+        SaveButton Save = new SaveButton(null, new Rectangle(460,20,100,25),(JPanel)objectPanel,map,set1, "Object");
 
         while(bar.getAdjustmentListeners().length>0)
             bar.removeAdjustmentListener(bar.getAdjustmentListeners()[0]);
@@ -144,36 +144,36 @@ public class Main extends JFrame {
         set2.clear();
 
         field.Label NameLabel = new field.Label(set2,"Name: ", new Rectangle(15, 20, 85, 25),
-                null, null, (JPanel) eventPanel);
+                null, (JPanel) eventPanel);
         field.TextField Name = new field.TextField("Pred", new Rectangle(110, 20, 120, 25),
-                null, null, (JPanel) eventPanel, map, set2);
+                null, (JPanel) eventPanel, map, set2);
         addNameFunctionality(Name);
         field.Label HeadLabel = new field.Label(set2,"Head: ", new Rectangle(15, 20, 85, 25),
-                NameLabel, null, (JPanel) eventPanel);
+                NameLabel, (JPanel) eventPanel);
         field.DropDown Head = new field.DropDown("Head", possibleEventHeads, new Rectangle(110,20,120,
-                25), Name, null, (JPanel)eventPanel, map, set2);
+                25), Name, (JPanel)eventPanel, map, set2);
         field.Label TypeLabel = new field.Label(set2, "Type: ", new Rectangle(15, 20, 85, 25),
-                HeadLabel, null, (JPanel) eventPanel);
+                HeadLabel, (JPanel) eventPanel);
         DropDownList Types = new DropDownList("Type", new Rectangle(110,20,100,25),true,false,
-                3,0,(JPanel)eventPanel,map,null,possibleEventTypes,Head,null, set2);
-        AddButton addType = new AddButton(Head, null, new Rectangle(350,20,100,25),Types,(JPanel)eventPanel,set2);
+                3,0,(JPanel)eventPanel,map,null,possibleEventTypes,Head, set2);
+        AddButton addType = new AddButton(Head, new Rectangle(350,20,100,25),Types,(JPanel)eventPanel,set2);
         field.Label ArgsLabel = new field.Label(set2,"Args: ", new Rectangle(15, 20, 100, 25),
-                Types,null,(JPanel)eventPanel);
-        TextFieldList Args = new TextFieldList("Args",new Rectangle(50, 20, 150, 25),true,false,Integer.MAX_VALUE,
-            0,(JPanel)eventPanel,map,null,ArgsLabel,null,set2);
-        AddButton addArg = new AddButton(Types,null,new Rectangle(350,20,100,25),Args,(JPanel)eventPanel,set2);
+                Types,(JPanel)eventPanel);
+        TextFieldList Args = new TextFieldList("Args",new Rectangle(50, 20, 150, 25),true,false,
+                Integer.MAX_VALUE,0,(JPanel)eventPanel,map,null,ArgsLabel,set2);
+        AddButton addArg = new AddButton(Types, new Rectangle(350,20,100,25),Args,(JPanel)eventPanel,set2);
         field.Label BodyLabel = new field.Label(set2,"Body: ", new Rectangle(15, 20, 100, 25),
-                Args,null,(JPanel)eventPanel);
+                Args,(JPanel)eventPanel);
         TextFieldList Body = new TextFieldList("Body",new Rectangle(50, 20, 150, 25),true,false,Integer.MAX_VALUE,
-                0,(JPanel)eventPanel,map,null,BodyLabel,null,set2);
-        AddButton addBody = new AddButton(Args,null,new Rectangle(350,20,100,25),Body,(JPanel)eventPanel,set2);
+                0,(JPanel)eventPanel,map,null,BodyLabel,set2);
+        AddButton addBody = new AddButton(Args, new Rectangle(350,20,100,25),Body,(JPanel)eventPanel,set2);
         field.Label EmbeddingSpaceLabel = new field.Label(set2,"Embedding Space: ", new Rectangle(15,20,200,25),Body,
-                null,(JPanel)eventPanel);
-        field.TextField EmbeddingSpace = new field.TextField("embeddingSpace",new Rectangle(30,20,100,25),EmbeddingSpaceLabel,null,
+                (JPanel)eventPanel);
+        field.TextField EmbeddingSpace = new field.TextField("embeddingSpace",new Rectangle(30,20,100,25),EmbeddingSpaceLabel,
                 (JPanel)eventPanel,map,set2);
-        LoadButton Load = new LoadButton(null,null,new Rectangle(350,20,100,25),(JPanel)eventPanel,map,set2,"Program",
+        LoadButton Load = new LoadButton(null, new Rectangle(350,20,100,25),(JPanel)eventPanel,map,set2,"Program",
                 this, tabs);
-        SaveButton Save = new SaveButton(null,null,new Rectangle(460,20,100,25),(JPanel)eventPanel,map,set2,"Program");
+        SaveButton Save = new SaveButton(null, new Rectangle(460,20,100,25),(JPanel)eventPanel,map,set2,"Program");
 
         eventPanel.setBackground(lightGreen);
         eventPanel.setBounds(0,0,600, EmbeddingSpace.getBounds().y + EmbeddingSpace.getBounds().height + 20);
@@ -193,11 +193,11 @@ public class Main extends JFrame {
     private void addNameFunctionality(TextField Name)
     {
         Name.setFrame(this);
-        Name.textfield.addActionListener(
+        Name.getTextfield().addActionListener(
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        setTitle(Name.textfield.getText());
+                        setTitle(Name.getTextfield().getText());
                     }
                 }
         );
@@ -211,6 +211,8 @@ public class Main extends JFrame {
     {
         return set2;
     }
+    public HashMap<String, ArrayList<String>> getMap() {return map; }
+    public JTabbedPane getTabs() {return tabs; }
 
     Color lightPurple = new Color(200, 150, 250);
     Color lightGreen = new Color(150, 250, 150);
