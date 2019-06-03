@@ -73,6 +73,7 @@ public class ComponentsList extends TextFieldList {
             concavity.getLast().getCheckbox().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    getConcavityStrings();
                     getValueStrings();
                 }
             });
@@ -85,11 +86,11 @@ public class ComponentsList extends TextFieldList {
     {
         super.remove(index);
         if(concavity.size() > index) {
-            CheckBox checkBox = concavity.get(index);
+            field.CheckBox checkBox = concavity.get(index);
             checkBox.getCheckbox().setVisible(false);
             getPanel().remove(checkBox.getCheckbox());
             concavity.remove(index);
-            for (int i = 0; i < concavity.size(); i++) {
+            for (int i = 0; i < list.size(); i++) {
                 if (i > 0)
                     concavity.get(i).setPrev(concavity.get(i - 1));
                 else
@@ -118,7 +119,8 @@ public class ComponentsList extends TextFieldList {
         ArrayList<String> result = new ArrayList<String>();
         for(int i = 0; i < concavity.size(); i++)
         {
-            if(concavity.get(i).getCheckbox().isSelected())
+            if(super.getIndices() != null && super.getIndices().size() > i && super.getIndices().get(i) != null &&
+                    super.getIndices().get(i).getTextfield() != null && concavity.get(i).getCheckbox().isSelected())
             {
                 result.add("Concave[" + super.getIndices().get(i).getTextfield().getText() + "]");
             }
