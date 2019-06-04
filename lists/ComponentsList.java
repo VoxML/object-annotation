@@ -3,7 +3,6 @@ package lists;
 import buttons.AddButton;
 import field.AnnotationComponent;
 import field.CheckBox;
-import field.TextField;
 
 import javax.swing.*;
 import java.awt.*;
@@ -103,7 +102,7 @@ public class ComponentsList extends TextFieldList {
         ArrayList<String> result = new ArrayList<String>();
         for(int i = 0; i < size; i++)
         {
-            if(list.get(i).getValueStrings() != null && list.get(i).getValueStrings().size()>0 && !list.get(i).getValueStrings().get(0).equals("")) {
+            if(list.size() > i && list.get(i).getValueStrings() != null && list.get(i).getValueStrings().size()>0 && !list.get(i).getValueStrings().get(0).equals("")) {
                 String result_i = list.get(i).getValueStrings().get(0);
                 if(indexBool && super.getIndices().get(i).getValueStrings().size() > 0)
                     result_i += "[" + super.getIndices().get(i).getValueStrings().get(0) + "]";

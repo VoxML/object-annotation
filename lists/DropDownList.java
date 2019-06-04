@@ -180,7 +180,7 @@ public class DropDownList extends FieldList {
         ArrayList<String> result = new ArrayList<String>();
         for(int i = 0; i < size; i++)
         {
-            if(getList().get(i).getValueStrings() != null && getList().get(i).getValueStrings().size()>0 && !getList().get(i).getValueStrings().get(0).equals("")) {
+            if(getList().size() > i && getList().get(i).getValueStrings() != null && getList().get(i).getValueStrings().size()>0 && !getList().get(i).getValueStrings().get(0).equals("")) {
                 String result_i = getList().get(i).getValueStrings().get(0);
                 if(indexBool && ((TextField)(getIndices().get(i))).getValueStrings().size() > 0)
                     result_i += "[" + ((TextField)(getIndices().get(i))).getValueStrings().get(0) + "]s";
