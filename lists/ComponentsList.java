@@ -3,7 +3,6 @@ package lists;
 import buttons.AddButton;
 import field.AnnotationComponent;
 import field.CheckBox;
-import field.TextField;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,6 +72,7 @@ public class ComponentsList extends TextFieldList {
             concavity.getLast().getCheckbox().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    getConcavityStrings();
                     getValueStrings();
                 }
             });
@@ -85,11 +85,11 @@ public class ComponentsList extends TextFieldList {
     {
         super.remove(index);
         if(concavity.size() > index) {
-            CheckBox checkBox = concavity.get(index);
+            field.CheckBox checkBox = concavity.get(index);
             checkBox.getCheckbox().setVisible(false);
             getPanel().remove(checkBox.getCheckbox());
             concavity.remove(index);
-            for (int i = 0; i < concavity.size(); i++) {
+            for (int i = 0; i < list.size(); i++) {
                 if (i > 0)
                     concavity.get(i).setPrev(concavity.get(i - 1));
                 else
@@ -102,7 +102,7 @@ public class ComponentsList extends TextFieldList {
         ArrayList<String> result = new ArrayList<String>();
         for(int i = 0; i < size; i++)
         {
-            if(list.get(i).getValueStrings() != null && list.get(i).getValueStrings().size()>0 && !list.get(i).getValueStrings().get(0).equals("")) {
+            if(list.size() > i && list.get(i).getValueStrings() != null && list.get(i).getValueStrings().size()>0 && !list.get(i).getValueStrings().get(0).equals("")) {
                 String result_i = list.get(i).getValueStrings().get(0);
                 if(indexBool && super.getIndices().get(i).getValueStrings().size() > 0)
                     result_i += "[" + super.getIndices().get(i).getValueStrings().get(0) + "]";
@@ -118,7 +118,8 @@ public class ComponentsList extends TextFieldList {
         ArrayList<String> result = new ArrayList<String>();
         for(int i = 0; i < concavity.size(); i++)
         {
-            if(concavity.get(i).getCheckbox().isSelected())
+            if(super.getIndices() != null && super.getIndices().size() > i && super.getIndices().get(i) != null &&
+                    super.getIndices().get(i).getTextfield() != null && concavity.get(i).getCheckbox().isSelected())
             {
                 result.add("Concave[" + super.getIndices().get(i).getTextfield().getText() + "]");
             }

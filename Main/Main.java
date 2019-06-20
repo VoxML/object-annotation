@@ -75,19 +75,19 @@ public class Main extends JFrame {
         Components.getConcavityStrings();
         field.Label RotSymLabel = new field.Label(set1,"Rotational symmetry: ", new Rectangle(15, 20, 200, 25),
                 Components,(JPanel)objectPanel);
-        field.CheckBox rotationalSymmetryX = new field.CheckBox("RotatSym[0]","X",new Rectangle(30,20,35,25),RotSymLabel,
+        field.CheckBox rotationalSymmetryX = new field.CheckBox("RotatSym[0]","X",new Rectangle(30,20,45,25),RotSymLabel,
                 (JPanel)objectPanel,map,set1);
-        field.CheckBox rotationalSymmetryY = new field.CheckBox("RotatSym[1]","Y",new Rectangle(100,20,35,25),RotSymLabel,
+        field.CheckBox rotationalSymmetryY = new field.CheckBox("RotatSym[1]","Y",new Rectangle(110,20,45,25),RotSymLabel,
                 (JPanel)objectPanel,map,set1);
-        field.CheckBox rotationalSymmetryZ = new field.CheckBox("RotatSym[2]","Z",new Rectangle(170,20,35,25),RotSymLabel,
+        field.CheckBox rotationalSymmetryZ = new field.CheckBox("RotatSym[2]","Z",new Rectangle(190,20,45,25),RotSymLabel,
                 (JPanel)objectPanel,map,set1);
         field.Label ReflSymLabel = new field.Label(set1,"Reflection symmetry: ", new Rectangle(15, 20, 200, 25),
                 rotationalSymmetryX,(JPanel)objectPanel);
-        field.CheckBox reflectionSymmetryXY = new field.CheckBox("ReflSym[0]","XY",new Rectangle(30,20,45,25),ReflSymLabel,
+        field.CheckBox reflectionSymmetryXY = new field.CheckBox("ReflSym[0]","XY",new Rectangle(30,20,55,25),ReflSymLabel,
                 (JPanel)objectPanel,map,set1);
-        field.CheckBox reflectionSymmetryYZ = new field.CheckBox("ReflSym[1]","YZ",new Rectangle(110,20,45,25),ReflSymLabel,
+        field.CheckBox reflectionSymmetryYZ = new field.CheckBox("ReflSym[1]","YZ",new Rectangle(120,20,55,25),ReflSymLabel,
                 (JPanel)objectPanel,map,set1);
-        field.CheckBox reflectionSymmetryXZ = new field.CheckBox("ReflSym[2]","XZ",new Rectangle(190,20,45,25),ReflSymLabel,
+        field.CheckBox reflectionSymmetryXZ = new field.CheckBox("ReflSym[2]","XZ",new Rectangle(210,20,55,25),ReflSymLabel,
                 (JPanel)objectPanel,map,set1);
         field.Label HabitatsLabel = new field.Label(set1,"Habitats: ", new Rectangle(15, 20, 100, 25),
                 reflectionSymmetryXY,(JPanel)objectPanel);
