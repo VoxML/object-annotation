@@ -50,6 +50,7 @@ public class Main extends JFrame {
         JScrollPane objectScrollPane = new JScrollPane(objectPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         JScrollBar bar = objectScrollPane.getVerticalScrollBar();
         set1.clear();
+        objectPanel.setBackground(lightPurple);
 
         field.Label NameLabel = new field.Label(set1,"Name: ", new Rectangle(15, 20, 85, 25),
                 null, (JPanel) objectPanel);
@@ -66,11 +67,13 @@ public class Main extends JFrame {
                 HeadLabel, (JPanel) objectPanel);
         DropDownList Types = new DropDownList("Type", new Rectangle(110,20,100,25),true,false,
                 3,0,(JPanel)objectPanel,map,null,possibleTypes, Head, set1);
+        Types.setLabel(TypeLabel);
         AddButton addType = new AddButton(Head, new Rectangle(350,20,100,25),Types,(JPanel)objectPanel,set1);
         field.Label ComponentsLabel = new field.Label(set1,"Components: ", new Rectangle(15, 20, 100, 25),
                 Types,(JPanel)objectPanel);
         ComponentsList Components = new ComponentsList("Components", new Rectangle(50, 20, 100, 25), true, true,
                 (JPanel)objectPanel,map,null,ComponentsLabel,set1);
+        Components.setLabel(ComponentsLabel);
         AddButton addComponent = new AddButton(Types,new Rectangle(350,20,100,25),Components,(JPanel)objectPanel,set1);
         Components.getConcavityStrings();
         field.Label RotSymLabel = new field.Label(set1,"Rotational symmetry: ", new Rectangle(15, 20, 200, 25),
@@ -99,6 +102,7 @@ public class Main extends JFrame {
                 HabitatsLabel,(JPanel)objectPanel);
         TextFieldList Intrinsic = new TextFieldList("Intrinsic", new Rectangle(110,20,80,25),true,true,
                 Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,IntrinsicLabel,set1);
+        Intrinsic.setLabel(IntrinsicLabel);
         AddButton addIntrinsic = new AddButton(HabitatsLabel,new Rectangle(350,20,100,25),Intrinsic,(JPanel)objectPanel,set1);
         field.Label ExtrinsicNameLabel = new field.Label(set1,"name: ", new Rectangle(110, 20, 100, 25),
                 Intrinsic,(JPanel)objectPanel);
@@ -108,11 +112,13 @@ public class Main extends JFrame {
                 Intrinsic,(JPanel)objectPanel);
         TextFieldList Extrinsic = new TextFieldList("Extrinsic", new Rectangle(110,20,80,25),true,true,
                 Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,ExtrinsicLabel,set1);
+        Extrinsic.setLabel(ExtrinsicLabel);
         AddButton addExtrinsic = new AddButton(Intrinsic,new Rectangle(350,20,100,25),Extrinsic,(JPanel)objectPanel,set1);
         field.Label AffordancesLabel = new field.Label(set1,"Affordances: ", new Rectangle(15, 20, 120, 25),
                 Extrinsic,(JPanel)objectPanel);
         TextFieldList Affordances = new TextFieldList("Affordances", new Rectangle(15,20,200,25),true,false,
                 Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,AffordancesLabel,set1);
+        Affordances.setLabel(AffordancesLabel);
         AddButton addAffordance = new AddButton(Extrinsic, new Rectangle(350,20,100,25),Affordances,(JPanel)objectPanel,set1);
         field.Label ScaleLabel = new field.Label(set1,"Scale: ", new Rectangle(15, 20, 70, 25),
                 Affordances,(JPanel)objectPanel);
@@ -130,9 +136,10 @@ public class Main extends JFrame {
             bar.removeAdjustmentListener(bar.getAdjustmentListeners()[0]);
         for(AnnotationComponent comp : set1)
             comp.setVerticalBar(bar);
-        objectPanel.setBackground(lightPurple);
+
         objectPanel.setBounds(0,0,600, Movable.getBounds().y + Movable.getBounds().height + 20);
         objectPanel.setPreferredSize(new Dimension(600, Movable.getBounds().y + Movable.getBounds().height + 20));
+
         return objectScrollPane;
     }
 
@@ -142,6 +149,7 @@ public class Main extends JFrame {
         JScrollPane eventScrollPane = new JScrollPane(eventPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         JScrollBar bar = eventScrollPane.getVerticalScrollBar();
         set2.clear();
+        eventPanel.setBackground(lightGreen);
 
         field.Label NameLabel = new field.Label(set2,"Name: ", new Rectangle(15, 20, 85, 25),
                 null, (JPanel) eventPanel);
@@ -156,16 +164,19 @@ public class Main extends JFrame {
                 HeadLabel, (JPanel) eventPanel);
         DropDownList Types = new DropDownList("Type", new Rectangle(110,20,100,25),true,false,
                 3,0,(JPanel)eventPanel,map,null,possibleEventTypes,Head, set2);
+        Types.setLabel(TypeLabel);
         AddButton addType = new AddButton(Head, new Rectangle(350,20,100,25),Types,(JPanel)eventPanel,set2);
         field.Label ArgsLabel = new field.Label(set2,"Args: ", new Rectangle(15, 20, 100, 25),
                 Types,(JPanel)eventPanel);
         TextFieldList Args = new TextFieldList("Args",new Rectangle(50, 20, 150, 25),true,false,
                 Integer.MAX_VALUE,0,(JPanel)eventPanel,map,null,ArgsLabel,set2);
+        Args.setLabel(ArgsLabel);
         AddButton addArg = new AddButton(Types, new Rectangle(350,20,100,25),Args,(JPanel)eventPanel,set2);
         field.Label BodyLabel = new field.Label(set2,"Body: ", new Rectangle(15, 20, 100, 25),
                 Args,(JPanel)eventPanel);
         TextFieldList Body = new TextFieldList("Body",new Rectangle(50, 20, 150, 25),true,false,Integer.MAX_VALUE,
                 0,(JPanel)eventPanel,map,null,BodyLabel,set2);
+        Body.setLabel(BodyLabel);
         AddButton addBody = new AddButton(Args, new Rectangle(350,20,100,25),Body,(JPanel)eventPanel,set2);
         field.Label EmbeddingSpaceLabel = new field.Label(set2,"Embedding Space: ", new Rectangle(15,20,200,25),Body,
                 (JPanel)eventPanel);
@@ -175,7 +186,6 @@ public class Main extends JFrame {
                 this, tabs);
         SaveButton Save = new SaveButton(null, new Rectangle(460,20,100,25),(JPanel)eventPanel,map,set2,"Program");
 
-        eventPanel.setBackground(lightGreen);
         eventPanel.setBounds(0,0,600, EmbeddingSpace.getBounds().y + EmbeddingSpace.getBounds().height + 20);
         eventPanel.setPreferredSize(new Dimension(600, EmbeddingSpace.getBounds().y + EmbeddingSpace.getBounds().height + 20));
         while(bar.getAdjustmentListeners().length>0)

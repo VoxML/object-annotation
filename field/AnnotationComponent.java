@@ -16,6 +16,7 @@ public class AnnotationComponent {
     protected boolean moved;
     protected JScrollBar verticalBar;
     protected int indicator;
+    protected AnnotationComponent extraPrev;
 
     public AnnotationComponent()
     {    }
@@ -37,7 +38,21 @@ public class AnnotationComponent {
                 for (AnnotationComponent comp : getSet()) {
                     if (comp instanceof FieldList) {
                         if (((FieldList) comp).getList() != null && ((FieldList) comp).getList().size() > 0) {
+                            for (AnnotationComponent comp1 : getSet()) {
+                                if(comp1.extraPrev != null && comp1.extraPrev.equals(comp)) {
+                                    comp1.extraPrev = ((FieldList)comp).getLabel();
+                                    comp1.prev = comp;
+                                }
+                            }
                             comp.setHeight((int) (((AnnotationComponent) ((FieldList) (comp)).getList().getLast()).bounds.getY()));
+                        }
+                        if (((FieldList) comp).getList() != null && ((FieldList) comp).getList().size() == 0) {
+                            for (AnnotationComponent comp1 : getSet()) {
+                                if(comp1.prev != null && comp1.prev.equals(comp)) {
+                                    comp1.extraPrev = comp;
+                                    comp1.prev = ((FieldList)comp).getLabel();
+                                }
+                            }
                         }
                     }
                 }
@@ -176,4 +191,5 @@ public class AnnotationComponent {
     public void setIndicator(int indicator) {
         this.indicator = indicator;
     }
+
 }
