@@ -40,11 +40,11 @@ public class Box extends AnnotationComponent {
                 box1.bounds.y = (int) box1.top.getBounds().getY() - 20;
                 if (!(box1.bottom instanceof lists.FieldList))
                     box1.bounds.height = (int) box1.bottom.getBounds().getY() + (int) box1.bottom.getBounds().getHeight() + 10 - box1.bounds.y;
-                else if (((lists.FieldList) box1.bottom).getList().size() > 0)
+                else if (((lists.FieldList) box1.bottom).getList() != null && ((lists.FieldList) box1.bottom).getList().size() > 0)
                     box1.bounds.height = (int) ((AnnotationComponent) (((lists.FieldList) box1.bottom).getList().getLast())).getBounds().getY() +
-                            (int) ((lists.FieldList) box1.bottom).getLabel().getBounds().getHeight() + 10 - box1.bounds.y;
-                else
-                    box1.bounds.height = (int) ((AnnotationComponent) (((lists.FieldList) box1.bottom).getList().getLast())).getBounds().getY() +
+                            (int) ((AnnotationComponent) (((lists.FieldList) box1.bottom).getList().getLast())).getBounds().getHeight() + 10 - box1.bounds.y;
+                else if (((lists.FieldList) box1.bottom).getList() != null && ((lists.FieldList) box1.bottom).getList().size() == 0)
+                    box1.bounds.height = (int) ((lists.FieldList) box1.bottom).getLabel().getBounds().getY() +
                             (int) ((lists.FieldList) box1.bottom).getLabel().getBounds().getHeight() + 10 - box1.bounds.y;
 
             }
