@@ -51,6 +51,7 @@ public class CheckBox extends AnnotationField {
     {
         JCheckBox result = new JCheckBox(name);
         result.setBounds(checkboxBounds);
+        result.setBackground(panel.getBackground());
         result.addActionListener(
                 new ActionListener() {
                     @Override
@@ -70,6 +71,7 @@ public class CheckBox extends AnnotationField {
         getPanel().add(result);
         checkbox = result;
         updateLocation();
+        this.component = result;
         return result;
     }
 

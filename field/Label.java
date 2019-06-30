@@ -43,6 +43,7 @@ public class Label extends AnnotationComponent {
         getPanel().add(result);
         label = result;
         updateLocation();
+        this.component = result;
         return getLabel();
     }
 

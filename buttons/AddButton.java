@@ -46,6 +46,7 @@ public class AddButton extends Button{
             setButton(super.createButton("add", buttonBounds, AL));
             list.setAdd(this);
         }
+        this.component = getButton();
         return getButton();
     }
 

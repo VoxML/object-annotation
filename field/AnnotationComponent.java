@@ -9,6 +9,7 @@ import java.util.Queue;
 
 public class AnnotationComponent {
     //includes buttons as well as fields
+    private HashSet<Box> boxSet = null;
     protected Rectangle bounds;
     protected AnnotationComponent prev; //vertically previous component
     protected JPanel panel;
@@ -16,6 +17,9 @@ public class AnnotationComponent {
     protected boolean moved;
     protected JScrollBar verticalBar;
     protected int indicator;
+    protected AnnotationComponent extraPrev;
+    public JComponent component = null;
+    protected boolean boxtop = false;
 
     public AnnotationComponent()
     {    }
@@ -37,15 +41,32 @@ public class AnnotationComponent {
                 for (AnnotationComponent comp : getSet()) {
                     if (comp instanceof FieldList) {
                         if (((FieldList) comp).getList() != null && ((FieldList) comp).getList().size() > 0) {
+                            for (AnnotationComponent comp1 : getSet()) {
+                                if(comp1.extraPrev != null && comp1.extraPrev.equals(comp)) {
+                                    comp1.extraPrev = ((FieldList)comp).getLabel();
+                                    comp1.prev = comp;
+                                }
+                            }
                             comp.setHeight((int) (((AnnotationComponent) ((FieldList) (comp)).getList().getLast()).bounds.getY()));
+                        }
+                        if (((FieldList) comp).getList() != null && ((FieldList) comp).getList().size() == 0) {
+                            for (AnnotationComponent comp1 : getSet()) {
+                                if(comp1.prev != null && comp1.prev.equals(comp)) {
+                                    comp1.extraPrev = comp;
+                                    comp1.prev = ((FieldList)comp).getLabel();
+                                }
+                            }
                         }
                     }
                 }
             }
 
             if (!this.isMoved()) {
-                if ((!(this instanceof FieldList)) && this.getPrev() != null && this.getPrev().bounds != null) {
+                if ((!(this instanceof FieldList)) && this.getPrev() != null && this.getPrev().bounds != null && !(this instanceof Box)) {
                     this.setHeight((int) this.getPrev().bounds.getY() + this.getPrev().bounds.height + gapSize);
+                }
+                else if(this instanceof Box) {
+                    ((Box) this).updateBoxLocation();
                 }
 
                 for (AnnotationComponent comp : getSet()) {
@@ -92,7 +113,10 @@ public class AnnotationComponent {
             if(q.peek().getIndicator() == 0 && q.peek() instanceof TextField && ((TextField) q.peek()).getTextfield() != null &&
                     (!(((TextField) (q.peek())).getTextfield().getText().equals("")) || ((TextField) q.peek()).isHasBeenChanged()))
                 ((TextField) q.peek()).pressEnter();
-            q.remove().updateLocation(10,true,q);
+            if(q.peek().boxtop)
+                q.remove().updateLocation(45,true,q);
+            else
+                q.remove().updateLocation(10,true,q);
         }
         if(getSet() != null) {
             for (AnnotationComponent comp : getSet()) {
@@ -176,4 +200,7 @@ public class AnnotationComponent {
     public void setIndicator(int indicator) {
         this.indicator = indicator;
     }
+
+    public void setBoxtop(boolean boxtop) { this.boxtop = boxtop; updateLocation(); }
+
 }

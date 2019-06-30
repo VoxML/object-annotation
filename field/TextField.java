@@ -79,6 +79,7 @@ public class TextField extends AnnotationField<String> {
         getPanel().add(result);
         textfield = result;
         updateLocation();
+        this.component = result;
         return getTextfield();
     }
 

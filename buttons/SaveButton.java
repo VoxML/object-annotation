@@ -284,7 +284,7 @@ public class SaveButton extends Button {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource domSource = new DOMSource(document);
-            File file = new File(path + "\\" + getFileName() + ".xml");
+            File file = new File(path + File.separator + getFileName() + ".xml");
             StreamResult streamResult = new StreamResult(file);
             document.setXmlVersion("1.0");
             transformer.setOutputProperty(OutputKeys.ENCODING, "us-ascii");

@@ -21,6 +21,7 @@ public class FieldList<E extends AnnotationField> extends AnnotationField
     protected int max;
     protected int min;
     protected int size;
+    protected AnnotationComponent label;
 
     public FieldList(String key, Rectangle bounds, boolean removeBool, boolean indexBool, int max, int min, JPanel panel,
                      HashMap<String, ArrayList<String>> map, AddButton add, AnnotationComponent prev, HashSet<AnnotationComponent> set)
@@ -95,6 +96,16 @@ public class FieldList<E extends AnnotationField> extends AnnotationField
 
     public LinkedList<TextField> getIndices() {
         return indices;
+    }
+
+    public void setLabel(AnnotationComponent label)
+    {
+        this.label = label;
+    }
+
+    public AnnotationComponent getLabel()
+    {
+        return label;
     }
 
 }

@@ -1,6 +1,6 @@
 package buttons;
 
-import Main.Main;
+import Main.VoxML_Annotation_Tool;
 import field.*;
 import field.TextField;
 import lists.ComponentsList;
@@ -30,13 +30,13 @@ public class LoadButton extends Button {
     private HashSet<AnnotationComponent> componentSet;
     private String path;
     private String entityType;
-    private Main Main;
+    private VoxML_Annotation_Tool Main;
     private JTabbedPane tabs;
     private Document doc;
 
     public LoadButton(AnnotationComponent prev, Rectangle bounds, JPanel panel,
                       HashMap<String,ArrayList<String>> map, HashSet<AnnotationComponent> set,
-                      String entityType, Main Main, JTabbedPane tabs)
+                      String entityType, VoxML_Annotation_Tool Main, JTabbedPane tabs)
     {
         super("load", prev, bounds, panel, null, null);
         this.setAL(new ActionListener() {
@@ -557,7 +557,7 @@ public class LoadButton extends Button {
         return entityType;
     }
 
-    public Main getMain() {
+    public VoxML_Annotation_Tool getMain() {
         return Main;
     }
 

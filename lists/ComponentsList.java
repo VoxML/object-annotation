@@ -54,11 +54,11 @@ public class ComponentsList extends TextFieldList {
             if (concavity.size() > 0) {
                 concavity.add(new CheckBox(getKey() + "_concave[" + concavity.size() + "]", "concave",
                         new Rectangle(xBound, bounds.y + concavity.size() * (bounds.height + 5),
-                        75, bounds.height), list.get(list.size() - 1).getPrev(), getPanel(), getMap(), getSet()));
+                        150, bounds.height), list.get(list.size() - 1).getPrev(), getPanel(), getMap(), getSet()));
             } else {
                 concavity.add(new CheckBox(getKey() + "_concave[" + concavity.size() + "]", "concave",
                         new Rectangle(xBound, bounds.y + concavity.size() * (bounds.height + 5),
-                        75, bounds.height), getPrev(), getPanel(), getMap(), getSet()));
+                        150, bounds.height), getPrev(), getPanel(), getMap(), getSet()));
             }
             concavity.get(concavity.size() - 1).getCheckbox().addActionListener(new ActionListener() {
                 @Override
