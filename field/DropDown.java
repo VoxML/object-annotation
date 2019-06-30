@@ -64,6 +64,7 @@ public class DropDown extends AnnotationField {
         getPanel().add(result);
         dropdown = result;
         updateLocation();
+        this.component = result;
         return getDropdown();
     }
 

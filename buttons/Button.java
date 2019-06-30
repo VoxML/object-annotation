@@ -55,6 +55,7 @@ public class Button extends AnnotationComponent {
         getButton().setVisible(true);
         getPanel().add(getButton());
         updateLocation();
+        this.component = getButton();
         return getButton();
     }
 

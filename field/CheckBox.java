@@ -71,6 +71,7 @@ public class CheckBox extends AnnotationField {
         getPanel().add(result);
         checkbox = result;
         updateLocation();
+        this.component = result;
         return result;
     }
 
