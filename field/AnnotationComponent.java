@@ -1,5 +1,6 @@
 package field;
 
+import lists.ComponentsList;
 import lists.FieldList;
 import javax.swing.*;
 import java.awt.*;
@@ -131,6 +132,18 @@ public class AnnotationComponent {
 
     public void updateLocation()
     {
+        if(this instanceof FieldList && ((FieldList)this).getList() != null && ((FieldList)this).getList().size()>0 && this.boxtop) {
+            ((AnnotationComponent) ((FieldList) this).getList().getFirst()).setBoxtop(true);
+            if(((FieldList)this).getRemove() != null && ((FieldList)this).getRemove().size()>0) {
+                ((AnnotationComponent) ((FieldList) this).getRemove().getFirst()).setBoxtop(true);
+            }
+            if(((FieldList)this).getIndices() != null && ((FieldList)this).getIndices().size()>0) {
+                ((AnnotationComponent) ((FieldList) this).getIndices().getFirst()).setBoxtop(true);
+            }
+            if(this instanceof ComponentsList && ((ComponentsList)this).getConcavity() != null && ((ComponentsList)this).getConcavity().size()>0) {
+                ((ComponentsList) this).getConcavity().getFirst().setBoxtop(true);
+            }
+        }
         if(getPrev() != null)
             getPrev().updateLocationPrev();
         else
