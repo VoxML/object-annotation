@@ -95,19 +95,18 @@ public class VoxML_Annotation_Tool extends JFrame {
                 (JPanel)objectPanel,map,set1);
         field.CheckBox reflectionSymmetryXZ = new field.CheckBox("ReflSym[2]","XZ",new Rectangle(210,20,55,25),ReflSymLabel,
                 (JPanel)objectPanel,map,set1);
-        field.Label HabitatsLabel = new field.Label(set1,"Habitats: ", new Rectangle(20, 20, 100, 25),
-                reflectionSymmetryXY,(JPanel)objectPanel);
-        HabitatsLabel.setBoxtop(true);
+        //field.Label HabitatsLabel = new field.Label(set1,"Habitats: ", new Rectangle(20, 20, 100, 25),
+                //reflectionSymmetryXY,(JPanel)objectPanel);
         field.Label IntrinsicNameLabel = new field.Label(set1,"name: ", new Rectangle(110, 20, 100, 25),
-                HabitatsLabel,(JPanel)objectPanel);
-        field.Label IntrinsicValueLavel = new field.Label(set1,"value: ", new Rectangle(195, 20, 100, 25),
-                HabitatsLabel,(JPanel)objectPanel);
+                reflectionSymmetryXZ,(JPanel)objectPanel);
+        field.Label IntrinsicValueLabel = new field.Label(set1,"value: ", new Rectangle(195, 20, 100, 25),
+                reflectionSymmetryXZ,(JPanel)objectPanel);
         field.Label IntrinsicLabel = new field.Label(set1,"Intrinsic: ", new Rectangle(30, 20, 100, 25),
-                HabitatsLabel,(JPanel)objectPanel);
+                reflectionSymmetryXZ,(JPanel)objectPanel);
         TextFieldList Intrinsic = new TextFieldList("Intrinsic", new Rectangle(110,20,80,25),true,true,
                 Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,IntrinsicLabel,set1);
         Intrinsic.setLabel(IntrinsicLabel);
-        AddButton addIntrinsic = new AddButton(HabitatsLabel,new Rectangle(350,20,100,25),Intrinsic,(JPanel)objectPanel,set1);
+        AddButton addIntrinsic = new AddButton(reflectionSymmetryXZ,new Rectangle(350,20,100,25),Intrinsic,(JPanel)objectPanel,set1);
         field.Label ExtrinsicNameLabel = new field.Label(set1,"name: ", new Rectangle(110, 20, 100, 25),
                 Intrinsic,(JPanel)objectPanel);
         field.Label ExtrinsicValueLabel = new field.Label(set1,"value: ", new Rectangle(195, 20, 100, 25),
@@ -118,12 +117,14 @@ public class VoxML_Annotation_Tool extends JFrame {
                 Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,ExtrinsicLabel,set1);
         Extrinsic.setLabel(ExtrinsicLabel);
         AddButton addExtrinsic = new AddButton(Intrinsic,new Rectangle(350,20,100,25),Extrinsic,(JPanel)objectPanel,set1);
-        field.Label AffordancesLabel = new field.Label(set1,"Affordances: ", new Rectangle(20, 20, 120, 25),
-                Extrinsic,(JPanel)objectPanel);
-        AffordancesLabel.setBoxtop(true);
+        IntrinsicLabel.setBoxtop(true);
+        IntrinsicNameLabel.setBoxtop(true);
+        IntrinsicValueLabel.setBoxtop(true);
+        addIntrinsic.setBoxtop(true);
         TextFieldList Affordances = new TextFieldList("Affordances", new Rectangle(20,20,200,25),true,false,
-                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,AffordancesLabel,set1);
-        Affordances.setLabel(AffordancesLabel);
+                Integer.MAX_VALUE,0,(JPanel)objectPanel,map,null,Extrinsic,set1);
+        Affordances.setBoxtop(true);
+        Affordances.setLabel(null);
         AddButton addAffordance = new AddButton(Extrinsic, new Rectangle(350,20,100,25),Affordances,(JPanel)objectPanel,set1);
         addAffordance.setBoxtop(true);
         field.Label ScaleLabel = new field.Label(set1,"Scale: ", new Rectangle(20, 20, 70, 25),
@@ -148,10 +149,10 @@ public class VoxML_Annotation_Tool extends JFrame {
                 ComponentsLabel,reflectionSymmetryXZ,boxSet1);
         Type.setPrev(Movable);
         field.Box HabitatsBox = new field.Box(set1,"Habitats",new Rectangle(10,10,450,20),(JPanel)objectPanel,
-                HabitatsLabel,Extrinsic,boxSet1);
+                IntrinsicLabel,Extrinsic,boxSet1);
         HabitatsBox.setPrev(Movable);
         field.Box AffordancesBox = new field.Box(set1,"Affordances",new Rectangle(10,10,450,20),(JPanel)objectPanel,
-                AffordancesLabel,Affordances,boxSet1);
+                Affordances,Affordances,boxSet1);
         AffordancesBox.setPrev(Movable);
         field.Box Embodiment = new field.Box(set1,"Embodiment",new Rectangle(10,10,450,20),(JPanel)objectPanel,
                 ScaleLabel,MovableLabel,boxSet1);
